@@ -196,11 +196,7 @@ exports.postnewcoupon = async function (req, res) {
 
 
 
-/**
- * API No. 2
- * API Name : 유저 조회 API (+ 이메일로 검색 조회)
- * [GET] /app/users
- */
+//유저 
 exports.getUsers = async function (req, res) {
 
     /**
@@ -466,11 +462,4 @@ exports.patchuseraddress = async function (req, res) {
 
 
 
-/** JWT 토큰 검증 API
- * [GET] /app/auto-login
- */
-exports.check = async function (req, res) {
-    const userIdResult = req.verifiedToken.userId;
-    console.log(userIdResult);
-    return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
-};
+
