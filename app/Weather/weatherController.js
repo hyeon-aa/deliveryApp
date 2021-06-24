@@ -19,7 +19,7 @@ exports.weather= async function (req, res) {
         })
 };
 */
-/*
+
 exports.weather= async function (req, res) {
     try {
         const data12= await axios.get(
@@ -38,32 +38,7 @@ exports.weather= async function (req, res) {
         console.log(err);
     }
 }
-*/
-exports.weather= async function (req, res) {
-    const fs = require('fs');
 
-    const aaa = () => {
-        setTimeout( () => { console.log('d'); }, 0);
-        console.log('c');
-    };
-
-    setTimeout( () => {
-        fs.readFile('any.txt', () => {
-            setTimeout(() => {
-                console.log('e');
-            }, 0);
-            setImmediate(() => {
-                console.log('f');
-            });
-        });
-    }, 0);
-
-    setTimeout( () => { console.log('a'); aaa(); }, 0 );
-
-    Promise.resolve().then( () => { aaa(); console.log('b'); });
-
-
-}
 
 /*
 exports.weather= async function (req, res) {
