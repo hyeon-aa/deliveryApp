@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="0f9b1d1e-7446-4403-b97d-3a613ef5592e" name="node.js" url="http://rohak.shop">
+        <fileTransfer rootFolder="/var/www/api-server-node-js-final" accessType="SFTP" host="54.180.99.93" port="22" sshConfigId="d786e25c-0db2-425d-8962-c8116a09752d" sshConfig="ubuntu@54.180.99.93:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="7d77d411-d10c-4532-b6a5-1128fc4cf321" name="server1" url="http://rohak.shop">
+        <fileTransfer rootFolder="/var/www/api-server-node-js-final" accessType="SFTP" host="54.180.99.93" port="22" sshConfigId="d786e25c-0db2-425d-8962-c8116a09752d" sshConfig="ubuntu@54.180.99.93:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
