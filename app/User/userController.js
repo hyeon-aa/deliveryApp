@@ -5,8 +5,9 @@ const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 const passport = require('passport')
 const KakaoStrategy = require('passport-kakao').Strategy;
-const secret_config = require("../../../config/secret");
+const secret_config = require("../../../config//secret");
 
+const axios = require("axios");
 const regexEmail = require("regex-email");
 const {emit} = require("nodemon");
 const crypto = require("crypto");
@@ -109,9 +110,75 @@ exports.postpointuse = async function (req, res) {
     return res.send(signUpResponse);
 };
 
-//유저 주소 등록
+//유저 주소 등록2
 exports.postaddress = async function (req, res) {
-    
+
+    const useridx = req.verifiedToken.useridx;
+    const {latitude, longitude, base} = req.body;
+
+    const header = `KakaoAK ${secret_config.KAKAO_SECRET}`;
+    const api_url = `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?input_coord=WGS84&output_coord=WGS84&y=${latitude}&x=${longitude}`;
+
+
+    const result = await axios({
+        url: api_url,
+        method: "get",
+        headers: {
+            Authorization: header,
+        }
+    })
+
+        .then(function (response) {
+            //console.log(response.data.documents);
+            const dongname = response.data.documents[0].region_3depth_name;
+            const useraddress = response.data.documents[0].address_name;
+            // console.log(response.data.documents[0].region_3depth_name);
+            let myadd=[];
+            myadd.push(dongname);
+            myadd.push(useraddress);
+            console.log(myadd);
+            return myadd;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+
+    console.log('결과',result);
+    const dongname=result[0];
+    console.log('동이름',dongname);
+    const useraddress=result[1];
+
+            // 위도 체크
+            if (!latitude)
+                return res.send(response(baseResponse.USER_LATITUDE_EMPTY));
+
+            // 위도 길이 체크
+            if (latitude > 43 || latitude < 33)
+                return res.send(response(baseResponse.LATITUDE_LENGTH));
+
+            // 경도 체크
+            if (!longitude)
+                return res.send(response(baseResponse.USER_LONGITUDE_EMPTY));
+
+            // 경도 길이 체크
+            if (longitude > 132 || longitude < 124)
+                return res.send(response(baseResponse.LONGITUDE_LENGTH));
+
+            // 기본배송지여부 체크
+            if (!base)
+                return res.send(response(baseResponse.USER_BASE_EMPTY));
+
+    var signUpResponse = await userService.createaddress(
+        useridx, useraddress, dongname, latitude, longitude, base
+    );
+
+    return res.send(signUpResponse);
+};
+
+//유저 주소 등록
+/*
+exports.postaddress = async function (req, res) {
+
     const useridx = req.verifiedToken.useridx ;
     const {useraddress,dongname,latitude,longitude,base} = req.body;
 
@@ -150,7 +217,7 @@ exports.postaddress = async function (req, res) {
 
     return res.send(signUpResponse);
 };
-
+*/
 
 //유저 검색내용 등록
 exports.postsearchcontent = async function (req, res) {
