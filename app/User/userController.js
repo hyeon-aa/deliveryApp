@@ -5,7 +5,7 @@ const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 const passport = require('passport')
 const KakaoStrategy = require('passport-kakao').Strategy;
-const secret_config = require("../../../config//secret");
+const secret_config = require("../../../config/secret");
 
 const regexEmail = require("regex-email");
 const {emit} = require("nodemon");
