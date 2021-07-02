@@ -3,6 +3,9 @@ const userProvider = require("../../app/User/userProvider");
 const userService = require("../../app/User/userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
+const passport = require('passport')
+const KakaoStrategy = require('passport-kakao').Strategy;
+const secret_config = require("../../../config//secret");
 
 const regexEmail = require("regex-email");
 const {emit} = require("nodemon");
@@ -44,8 +47,6 @@ exports.postUsers = async function (req, res) {
         .update(userpassword)
         .digest("hex");
 
-
-
     const signUpResponse = await userService.createUser(
         useremail ,username,userphoneNum,birthday,hashedPassword
     );
@@ -73,8 +74,6 @@ exports.postlikestores = async function (req, res) {
 
 //유저 포인트 적립
 exports.postpointsave = async function (req, res) {
-
-
 
     const  useridx= req.verifiedToken.useridx;
     const orderidx = req.query.orderidx;
@@ -112,8 +111,7 @@ exports.postpointuse = async function (req, res) {
 
 //유저 주소 등록
 exports.postaddress = async function (req, res) {
-
-
+    
     const useridx = req.verifiedToken.useridx ;
     const {useraddress,dongname,latitude,longitude,base} = req.body;
 
@@ -152,6 +150,7 @@ exports.postaddress = async function (req, res) {
 
     return res.send(signUpResponse);
 };
+
 
 //유저 검색내용 등록
 exports.postsearchcontent = async function (req, res) {
@@ -200,7 +199,11 @@ exports.postnewcoupon = async function (req, res) {
 
 
 
-//유저 
+/**
+ * API No. 2
+ * API Name : 유저 조회 API (+ 이메일로 검색 조회)
+ * [GET] /app/users
+ */
 exports.getUsers = async function (req, res) {
 
     /**
@@ -459,6 +462,14 @@ exports.patchuseraddress = async function (req, res) {
     }
 };
 
+//카카오로그인
+passport.use('kakao-login', new KakaoStrategy({
+        clientID: '${secret_config.KAKAO_SECRET}',
+        callbackURL: 'http://localhost:3000/auth/kakao1/callback',
+    }, async (accessToken, refreshToken, profile, done) => {
+        console.log(accessToken);
+        console.log(refreshToken);
+}));
 
 
 
@@ -466,4 +477,11 @@ exports.patchuseraddress = async function (req, res) {
 
 
 
-
+/** JWT 토큰 검증 API
+ * [GET] /app/auto-login
+ */
+exports.check = async function (req, res) {
+    const userIdResult = req.verifiedToken.userId;
+    console.log(userIdResult);
+    return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
+};
