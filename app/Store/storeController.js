@@ -4,7 +4,7 @@ const storeService = require("../../app/Store/storeService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 const axios = require("axios");
-const secret_config = require("../../../config//secret");
+const secret_config = require("../../../config/secret");
 
 const regexEmail = require("regex-email");
 const {emit} = require("nodemon");
