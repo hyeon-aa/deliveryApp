@@ -3,7 +3,7 @@ const axios = require("axios");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response} = require("../../../config/response");
 const {errResponse} = require("../../../config/response");
-
+const secret_config = require("../../../config//secret");
 const {connect} = require("http2");
 
 /*
@@ -11,7 +11,7 @@ exports.weather= async function (req, res) {
 
     axios({
         method:'get',
-        url:   `http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst?serviceKey=x2bXYHMeWutgCiIv7VKXZLAqluLh1OmRZLQTSr8EWz1df%2BfdJz7dri0V%2F2MV8sZ8hF0dNs%2BVDvUFIln2up4Arw%3D%3D&numOfRows=10&pageNo=1&base_date=20210618&base_time=0600&nx=55&ny=127`
+        url:   `http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst?serviceKey=${secret_config.serviceKey}&numOfRows=10&pageNo=1&base_date=20210618&base_time=0600&nx=55&ny=127`
 
 })
         .then(function(response){
@@ -23,7 +23,7 @@ exports.weather= async function (req, res) {
 exports.weather= async function (req, res) {
     try {
         const data12= await axios.get(
-                `http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst?serviceKey=x2bXYHMeWutgCiIv7VKXZLAqluLh1OmRZLQTSr8EWz1df%2BfdJz7dri0V%2F2MV8sZ8hF0dNs%2BVDvUFIln2up4Arw%3D%3D&numOfRows=10&pageNo=1&dataType=json&base_date=20210618&base_time=0600&nx=55&ny=127`
+                `http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst?serviceKey=${secret_config.serviceKey}&numOfRows=10&pageNo=1&dataType=json&base_date=20210618&base_time=0600&nx=55&ny=127`
             )
 
         var plainData = data12.data.response.header;
@@ -46,7 +46,7 @@ exports.weather= async function (req, res) {
         const base_time = req.query.base_time;
 
         const data12= await axios.get(
-            `http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst?serviceKey=x2bXYHMeWutgCiIv7VKXZLAqluLh1OmRZLQTSr8EWz1df%2BfdJz7dri0V%2F2MV8sZ8hF0dNs%2BVDvUFIln2up4Arw%3D%3D&numOfRows=10&pageNo=1&dataType=json&base_date=20210630&base_time=${base_time}&nx=55&ny=127`
+            `http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst?serviceKey=${secret_config.serviceKey}&numOfRows=10&pageNo=1&dataType=json&base_date=20210702&base_time=${base_time}&nx=55&ny=127`
         )
 
         var plainData = data12.data.response.body;
@@ -71,7 +71,7 @@ exports.weather= async function (req, res) {
     try {
         const year = req.query.year;
         const data12= await axios.get(
-            `http://apis.data.go.kr/B552584/UlfptcaAlarmInqireSvc/getUlfptcaAlarmInfo?year=${year}&pageNo=1&numOfRows=100&returnType=json&serviceKey=x2bXYHMeWutgCiIv7VKXZLAqluLh1OmRZLQTSr8EWz1df%2BfdJz7dri0V%2F2MV8sZ8hF0dNs%2BVDvUFIln2up4Arw%3D%3D`
+            `http://apis.data.go.kr/B552584/UlfptcaAlarmInqireSvc/getUlfptcaAlarmInfo?year=${year}&pageNo=1&numOfRows=100&returnType=json&serviceKey=${secret_config.serviceKey}`
         )
         console.log(data12);
         var plainData = data12.data.response.body;
@@ -91,7 +91,7 @@ exports.myweather= async function (req, res) {
         const pageNnum = req.body.pageNnum ;
 
         const data12= await axios.get(
-            `http://apis.data.go.kr/B552584/UlfptcaAlarmInqireSvc/getUlfptcaAlarmInfo?year=${year}&pageNo=${pageNnum}&numOfRows=100&returnType=json&serviceKey=x2bXYHMeWutgCiIv7VKXZLAqluLh1OmRZLQTSr8EWz1df%2BfdJz7dri0V%2F2MV8sZ8hF0dNs%2BVDvUFIln2up4Arw%3D%3D`
+            `http://apis.data.go.kr/B552584/UlfptcaAlarmInqireSvc/getUlfptcaAlarmInfo?year=${year}&pageNo=${pageNnum}&numOfRows=100&returnType=json&serviceKey=${secret_config.serviceKey}`
         )
         var plainData = data12.data.response.body;
         console.log(plainData);
