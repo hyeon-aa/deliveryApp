@@ -4,6 +4,7 @@ const storeService = require("../../app/Store/storeService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 const axios = require("axios");
+const secret_config = require("../../../config//secret");
 
 const regexEmail = require("regex-email");
 const {emit} = require("nodemon");
@@ -113,7 +114,7 @@ exports.getcategoryStoreidx = async function (req, res) {
       var {categoryidx, lat, long, sort,page,size} = req.query;
       const useridx = req.verifiedToken.useridx;
 
-      const header = `KakaoAK 0e55df00e6c4e1cbc43af9e713701a37`;
+      const header = `KakaoAK ${secret_config.KAKAO_SECRET}`;
       const api_url = `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?input_coord=WGS84&output_coord=WGS84&y=${lat}&x=${long}`;
 
       axios({
