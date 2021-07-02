@@ -3,6 +3,7 @@ const storeProvider = require("../../app/Store/storeProvider");
 const storeService = require("../../app/Store/storeService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
+const axios = require("axios");
 
 const regexEmail = require("regex-email");
 const {emit} = require("nodemon");
@@ -90,20 +91,55 @@ exports.getmenuorigin = async function (req, res) {
 
 
 //주소에 따른 카테고리별 음식점 조회
+/*
 exports.getcategoryStoreidx = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
     const categoryidx = req.query.categoryidx;
     const useridx = req.verifiedToken.useridx ;
-   // const offset = req.query.offset;
+
 
    if (!categoryidx) return res.send(errResponse(baseResponse. CATEGORY_CATEGORYIDX_EMPTY));
     if (!useridx) return res.send(errResponse(baseResponse. USER_USERIDX_EMPTY));
 
     const storeBycategoryidx = await storeProvider.retrieveStorecategory([categoryidx,useridx]);
     return res.send(response(baseResponse.STOREBYCATEGORY_SUCCESS, storeBycategoryidx));
+};
+*/
+
+//주소에 따른 카테고리별 음식점 조회2(현재위치에따라서)
+exports.getcategoryStoreidx = async function (req, res) {
+
+  try {
+      var {categoryidx, lat, long, sort,page,size} = req.query;
+      const useridx = req.verifiedToken.useridx;
+
+      const header = `KakaoAK 0e55df00e6c4e1cbc43af9e713701a37`;
+      const api_url = `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?input_coord=WGS84&output_coord=WGS84&y=${lat}&x=${long}`;
+
+      axios({
+          url: api_url,
+          method: "get",
+          headers: {
+              Authorization: header,
+          }
+      })
+
+          .then(function (response) {
+              console.log(response.data.documents);
+              console.log(response.data.documents[0].region_3depth_name);
+          })
+
+      if (!categoryidx) return res.send(errResponse(baseResponse.CATEGORY_CATEGORYIDX_EMPTY));
+      if (!useridx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
+
+      const storeBycategoryidx = await storeProvider.retrieveStorecategory([categoryidx, useridx, lat, long, sort,page,size]);
+      console.log('sort2', sort);
+      return res.send(response(baseResponse.STOREBYCATEGORY_SUCCESS, storeBycategoryidx));
+  }
+  catch (err) {
+        console.log(err);
+    }
+
 };
 
 //최종 음식점 메뉴 조회

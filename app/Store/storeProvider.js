@@ -84,6 +84,7 @@ exports.retrievemenuInfo = async function (storeidx) {
     return menuInfoArray
 };
 
+/*
 //주소에 따른 카테고리별 음식점 조회
 exports.retrieveStorecategory = async function ([categoryidx,useridx]) {
     const connection = await pool.getConnection(async (conn) => conn);
@@ -92,6 +93,17 @@ exports.retrieveStorecategory = async function ([categoryidx,useridx]) {
     connection.release();
 
    return storecategoryResult;
+};
+*/
+
+//주소에 따른 카테고리별 음식점 조회2
+exports.retrieveStorecategory = async function ([categoryidx,useridx,lat,long,sort,page,size]) {
+    const connection = await pool.getConnection(async (conn) => conn);
+    const storecategoryResult = await storeDao.selectcategorystoreidx(connection, [categoryidx,useridx,lat,long,sort,page,size]);
+    console.log('sort3',sort);
+    connection.release();
+
+    return storecategoryResult;
 };
 
 

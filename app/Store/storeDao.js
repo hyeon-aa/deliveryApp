@@ -100,7 +100,62 @@ async function selectmenuorigin(connection, storeidx) {
     return menuoriginRow;
 }
 
+//주소에 따른 카테고리별 음식점 조회2
+async function selectcategorystoreidx(connection, [categoryidx,useridx,lat,long,sort,page,size]) {
+    var selectcategorystoreidxQuery = `
+        select * from (
+            SELECT storename,deliveryexpectTime AS 'deliverytime',orderamountmin,deliveryTip,takeout,round(avg(userstarRating),1) as 'starrate',storeimage
+    ,case  when count(OrderInfo.useridx)=0 then 0
+           when count(OrderInfo.useridx)=1 then 1
+           when count(OrderInfo.useridx)=2 then 2
+           when count(OrderInfo.useridx)=3 then 3
+           when 20<=count(OrderInfo.useridx)<50 then concat(cast(20 as char(15)),'+')
+           when 50<=count(OrderInfo.useridx)<100 then concat(cast(50 as char(15)),'+')
+           else concat(cast(100 as char(15)),'+')
+                              end as orderc
+                               ,case when timestampdiff(day,Store.createdAt,current_timestamp())<30
+                                         then 'new' end as new
+                               ,(select 'Y' from Coupon where Store.storeidx=Coupon.couponidx) as 'iscoupon'
+                          from Review right outer join Store on (Review.storeidx=Store.storeidx)
+                                      left outer join OrderInfo on(Review.orderidx=OrderInfo.orderidx)
+                          where Store.categoryidx=? and Store.status='Y'
+                            and current_time between Store.opentime and Store.closetime
+                          group by Store.storeidx)as A
+                          inner join (
+            SELECT storename,distance
+            FROM (
+                     SELECT ( 6371 * acos( cos( radians(${lat} ) ) * cos( radians( Store.latitude) ) * cos( radians( Store.longitude )
+                         - radians(${long}) ) + sin( radians(${lat}) ) * sin( radians(Store.latitude) ) ) ) AS distance
+                          ,Store.storename
+                     FROM  Store
+                 ) DATA
+            WHERE DATA.distance < 5)as B
+                                     on A.storename=B.storename `;
+
+    console.log('sort',sort);
+    if (!sort || sort == 0) {
+        selectcategorystoreidxQuery += `order by starrate DESC `;
+    }
+    else if (sort == 1) {
+        selectcategorystoreidxQuery += `order by orderc DESC`;
+    }
+    else if (sort == 2) {
+        selectcategorystoreidxQuery += `order by deliveryTip asc`;
+    }
+    else if (sort == 3) {
+        selectcategorystoreidxQuery += `order by distance asc`;
+    }
+    if(page){
+        selectcategorystoreidxQuery += ` LIMIT ${size * (page - 1)},${size}`
+    }
+
+    const [categorystoreRow] = await connection.query(selectcategorystoreidxQuery,[categoryidx,useridx,lat,long,sort,page,size]);
+    //console.log(categoryidx);
+    return categorystoreRow;
+}
+
 //주소에 따른 카테고리별 음식점 조회
+/*
 async function selectcategorystoreidx(connection, [categoryidx,useridx]) {
     const selectcategorystoreidxQuery = `
         select * from (
@@ -130,13 +185,13 @@ async function selectcategorystoreidx(connection, [categoryidx,useridx]) {
                      FROM Useraddress join Store
                      where  Useraddress.useridx=? and Useraddress.base=0
                  ) DATA
-            WHERE DATA.distance < 25)as B
+            WHERE DATA.distance < 5)as B
                                      on A.storename=B.storename ;`;
     const [categorystoreRow] = await connection.query(selectcategorystoreidxQuery, [categoryidx,useridx]);
     console.log(categoryidx);
     return categorystoreRow;
 }
-
+*/
 
 
 //가게 상세정보 조회
