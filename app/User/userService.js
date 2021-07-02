@@ -6,6 +6,7 @@ const userDao = require("./userDao");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response} = require("../../../config/response");
 const {errResponse} = require("../../../config/response");
+const axios = require("axios");
 
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
@@ -76,7 +77,7 @@ exports.createaddress = async function (useridx,useraddress,dongname,latitude,lo
 
         const connection = await pool.getConnection(async (conn) => conn);
 
-        const likestoreResult = await userDao.insertuseraddress(connection, insertuseraddressParams);
+        const useraddressResult = await userDao.insertuseraddress(connection, insertuseraddressParams);
 
         connection.release();
         return response(baseResponse.SUCCESS);
@@ -86,6 +87,9 @@ exports.createaddress = async function (useridx,useraddress,dongname,latitude,lo
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
+
+
 
 //포인트 사용
 exports.createpointuse = async function (useridx,orderidx,pointuse) {

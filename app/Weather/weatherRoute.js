@@ -3,5 +3,5 @@ module.exports = function(app){
     const jwtMiddleware = require('../../../config/jwtMiddleware');
 
   app.get('/app/weather', weather.weather);
-    //app.post('/app/weather', weather.weather);
+  app.post('/app/myweather', weather.myweather);
 };

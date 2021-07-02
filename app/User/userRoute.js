@@ -1,7 +1,8 @@
 module.exports = function(app){
     const user = require('./userController');
     const jwtMiddleware = require('../../../config/jwtMiddleware');
-
+    const passport = require('passport')
+    const KakaoStrategy = require('passport-kakao').Strategy;
 
     // 1. 유저 생성 (회원가입) API
     app.post('/app/users/create', user.postUsers);
@@ -74,6 +75,11 @@ module.exports = function(app){
 
     //유저 주소 삭제
     app.patch('/app/users/address/:useridx/status',jwtMiddleware, user.patchuseraddress);
+
+    //카카오로그인
+    app.get('/kakao', passport.authenticate('kakao-login'));
+    app.get('/auth/kakao/callback', passport.authenticate('kakao-login', { failureRedirect: '/', }), (req, res) => { res.redirect('/'); });
+
 
 };
 

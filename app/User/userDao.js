@@ -341,6 +341,21 @@ async function insertsearchcontent(connection, insertsearchcontentParams) {
 }
 
 // 유저 주소 생성
+/*
+async function insertuseraddress(connection, insertuseraddressParams) {
+    const insertuseraddressQuery = `
+        INSERT INTO Useraddress(useridx,useraddress,dongname,latitude,longitude,base)
+        VALUES (?,?,?,?,?,?);
+    `;
+    const insertuseraddressRow = await connection.query(
+        insertuseraddressQuery,
+        insertuseraddressParams
+    );
+
+    return insertuseraddressRow;
+}*/
+
+// 유저 주소 생성2
 async function insertuseraddress(connection, insertuseraddressParams) {
     const insertuseraddressQuery = `
         INSERT INTO Useraddress(useridx,useraddress,dongname,latitude,longitude,base)
@@ -353,6 +368,7 @@ async function insertuseraddress(connection, insertuseraddressParams) {
 
     return insertuseraddressRow;
 }
+
 //유저 쿠폰 등록
 async function insertusercoupon(connection, insertusercouponParams) {
     const insertusercouponQuery = `
