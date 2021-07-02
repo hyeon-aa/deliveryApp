@@ -24,6 +24,10 @@ exports.postUsers = async function (req, res) {
     if (userpassword.length<5 || userpassword.length>17)
         return res.send(response(baseResponse.SIGNUP_PASSWORD_LENGTH));
 
+    var regPhone = /^01([0|1|6|7|8|9]?)-?([0-9]{3,4})-?([0-9]{4})$/;
+    if (!regPhone.test(userphoneNum))
+        return res.send(response(baseResponse.SIGNUP_PHONE_ERROR_TYPE));
+
     if (!userphoneNum)
         return res.send(response(baseResponse.SIGNUP_PHONENUM_EMPTY ));
 
