@@ -66,11 +66,11 @@ exports.postlikestores = async function (req, res) {
     if (!storeidx)
         return res.send(response(baseResponse. STORE_STOREIDX_EMPTY));
 
-    const signUpResponse = await userService.createlikestore(
+    const likestoreResponse = await userService.createlikestore(
       useridx,storeidx
     );
 
-    return res.send(signUpResponse);
+    return res.send(likestoreResponse);
 };
 
 //유저 포인트 적립
@@ -82,11 +82,11 @@ exports.postpointsave = async function (req, res) {
       if (!orderidx)
         return res.send(response(baseResponse. ORDER_ORDERIDX_EMPTY));
 
-    const signUpResponse = await userService.createpointsave(
+    const pointsaveResponse = await userService.createpointsave(
         useridx,orderidx
     );
 
-    return res.send(signUpResponse);
+    return res.send(pointsaveResponse);
 };
 
 //유저 포인트 사용
@@ -103,11 +103,11 @@ exports.postpointuse = async function (req, res) {
     if (!orderidx)
         return res.send(response(baseResponse. ORDER_ORDERIDX_EMPTY));
 
-    const signUpResponse = await userService.createpointuse(
+    const pointuseResponse = await userService.createpointuse(
         useridx,orderidx,pointuse
     );
 
-    return res.send(signUpResponse);
+    return res.send(pointuseResponse);
 };
 
 //유저 주소 등록2
@@ -168,11 +168,11 @@ exports.postaddress = async function (req, res) {
             if (!base)
                 return res.send(response(baseResponse.USER_BASE_EMPTY));
 
-    var signUpResponse = await userService.createaddress(
+    var addressResponse = await userService.createaddress(
         useridx, useraddress, dongname, latitude, longitude, base
     );
 
-    return res.send(signUpResponse);
+    return res.send(addressResponse);
 };
 
 //유저 주소 등록
@@ -210,12 +210,12 @@ exports.postaddress = async function (req, res) {
     if (!base)
         return res.send(response(baseResponse.USER_BASE_EMPTY));
 
-    const signUpResponse = await userService.createaddress(
+    const addressResponse = await userService.createaddress(
         useridx,useraddress,dongname,latitude,longitude,base
     );
 
 
-    return res.send(signUpResponse);
+    return res.send(addressResponse);
 };
 */
 
@@ -236,12 +236,12 @@ exports.postsearchcontent = async function (req, res) {
         return res.send(response(baseResponse.SEARCHCONTENT_LENGTH));
 
 
-    const signUpResponse = await userService.createsearchcontent(
+    const searchcontentResponse = await userService.createsearchcontent(
        useridx,searchcontent
     );
 
 
-    return res.send(signUpResponse);
+    return res.send(searchcontentResponse);
 };
 
 //유저 쿠폰 등록
@@ -256,26 +256,19 @@ exports.postnewcoupon = async function (req, res) {
         return res.send(response(baseResponse.COUPON_COUPONIDX_EMPTY));
 
 
-    const signUpResponse = await userService.createnewcoupon(
+    const newcouponResponse = await userService.createnewcoupon(
      useridx,couponidx
     );
 
 
-    return res.send(signUpResponse);
+    return res.send(newcouponResponse);
 };
 
 
 
-/**
- * API No. 2
- * API Name : 유저 조회 API (+ 이메일로 검색 조회)
- * [GET] /app/users
- */
+//유저 조회(이메일)
 exports.getUsers = async function (req, res) {
-
-    /**
-     * Query String: email
-     */
+    
     const useremail = req.query.useremail;
 
     if (!useremail) {
@@ -312,7 +305,7 @@ exports.getlikestoreById = async function (req, res) {
     /**
      * Path Variable: userId
      */
-    //const useridx = req.params.useridx;
+
     const useridx = req.verifiedToken.useridx ;
 
 
@@ -324,9 +317,6 @@ exports.getlikestoreById = async function (req, res) {
 //주문내역 조회
 exports.getorderlistById = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
      const useridx = req.verifiedToken.useridx ;
 
     const orderlistByUserId = await userProvider.retrieveorderlist(useridx);
@@ -336,9 +326,6 @@ exports.getorderlistById = async function (req, res) {
 //유저쿠폰 조회
 exports.getusercoupon = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
 
     const useridx = req.verifiedToken.useridx ;
 
@@ -349,9 +336,6 @@ exports.getusercoupon = async function (req, res) {
 //유저포인트 조회
 exports.getuserpoint= async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
     //const useridx = req.query.useridx ;
     const useridx = req.verifiedToken.useridx ;
 
@@ -362,9 +346,6 @@ exports.getuserpoint= async function (req, res) {
 //유저포인트 내역 조회
 exports.getuserpointinfo= async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
     const useridx = req.verifiedToken.useridx ;
 
     const userpointinfoByUserId = await userProvider.retrieveuserpointinfo(useridx);
@@ -374,9 +355,6 @@ exports.getuserpointinfo= async function (req, res) {
 //유저포인트 전체 조회
 exports.getuserpointdetail= async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
     const useridx = req.verifiedToken.useridx ;
 
     const userpointdetailByUserId = await userProvider.retrieveuserpointdetail(useridx);
@@ -387,10 +365,6 @@ exports.getuserpointdetail= async function (req, res) {
 //유저주소 조회
 exports.getuseraddress= async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
-   // const useridx = req.query.useridx ;
     const useridx = req.verifiedToken.useridx ;
 
     const useraddressByUserId = await userProvider.retrieveuseraddress(useridx);
@@ -404,9 +378,6 @@ exports.getuseraddress= async function (req, res) {
 //검색내역 조회
 exports.getusersearch = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
     const useridx = req.verifiedToken.useridx ;
 
     const usersearchByUserId = await userProvider.retrieveusersearch(useridx);
@@ -416,12 +387,7 @@ exports.getusersearch = async function (req, res) {
 //내가 쓴 리뷰 조회
 exports.getmyreview = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
     const useridx = req.verifiedToken.useridx ;
-
-  // if (!useridx ) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
 
     const myreviewByUserId = await userProvider.retrievemyreview(useridx);
     return res.send(response(baseResponse.MYREVIEW_SUCCESS,myreviewByUserId));
@@ -430,10 +396,7 @@ exports.getmyreview = async function (req, res) {
 //내가 쓴 리뷰 이미지  조회
 exports.getmyreviewimg = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
-
+  
     const useridx = req.verifiedToken.useridx ;
 
     const myreviewimgByUserId = await userProvider.retrievemyreviewimg(useridx);
