@@ -24,64 +24,14 @@ exports.retrievestorecategoryList = async function () {
     return storecategoryListResult;
 };
 
-//음식점 대표메뉴
-exports.retrievermenuStore = async function (storeidx) {
-    const connection = await pool.getConnection(async (conn) => conn);
-    const storermenuResult = await storeDao.selectrmenuStoreidx(connection, storeidx);
-
-    connection.release();
-
-    return storermenuResult;
-};
-
-//음식점 메뉴 카테고리 조회
-exports.retrievermenucategory = async function (storeidx) {
-    const connection = await pool.getConnection(async (conn) => conn);
-    const menucategoryResult = await storeDao.selectmenucategory(connection, storeidx);
-
-    connection.release();
-
-    return menucategoryResult;
-};
-
-//카테고리별 메뉴 조회
-exports.retrievemenubycategory = async function (storeidx) {
-    const connection = await pool.getConnection(async (conn) => conn);
-    const menubycategoryResult = await storeDao.selectmenubycategory(connection, storeidx);
-
-
-    connection.release();
-
-    return menubycategoryResult;
-};
-
-//메뉴 원산지 조회
-exports.retrievemenuorigin= async function (storeidx) {
-    const connection = await pool.getConnection(async (conn) => conn);
-    const menuoriginResult = await storeDao.selectmenuorigin(connection, storeidx);
-
-
-    connection.release();
-
-    return menuoriginResult;
-};
-
-//최종 음식점메뉴 조회
+//음식점메뉴 조회
 exports.retrievemenuInfo = async function (storeidx) {
     const connection = await pool.getConnection(async (conn) => conn);
-    const storermenuResult = await storeDao.selectrmenuStoreidx(connection, storeidx);
-    const menucategoryResult = await storeDao.selectmenucategory(connection, storeidx);
-    const menubycategoryResult = await storeDao.selectmenubycategory(connection, storeidx);
-    const menuoriginResult = await storeDao.selectmenuorigin(connection, storeidx);
+    const storemenuResult = await storeDao.selectmenubyStoreidx(connection, storeidx);
 
     connection.release();
 
-    var menuInfoArray=new Array();
-    menuInfoArray.push(storermenuResult);
-    menuInfoArray.push(menucategoryResult);
-    menuInfoArray.push(menubycategoryResult);
-    menuInfoArray.push(menuoriginResult);
-    return menuInfoArray
+    return storemenuResult;
 };
 
 /*

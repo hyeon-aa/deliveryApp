@@ -12,20 +12,8 @@ module.exports = function(app){
     //*특정 음식점 조회
     app.get('/app/stores/:storeidx', store.getStoreidx);
 
-    //특정 음식점 대표메뉴 조회
-    app.get('/app/stores/:storeidx/rmenus', store.getrmenuStoreidx);
-
-    //특정 음식점 메뉴 카테고리 조회
-    app.get('/app/stores/:storeidx/menucategory', store.getmenucategory);
-
-    //카테고리별 메뉴 조회 API
-    app.get('/app/stores/:storeidx/menubycategory', store.getmenubycategory);
-
-    //*최종 음식점 메뉴 조회 API
+    //*음식점 메뉴 조회 API
     app.get('/app/stores/:storeidx/menuinfos', store.getmenuInfo);
-
-    //*음식점 원산지 조회 API
-    app.get('/app/stores/:storeidx/menuorigin', store.getmenuorigin);
 
     //*주소에 따른 카테고리별 음식점 조회 API
     app.get('/app/stores',jwtMiddleware, store.getcategoryStoreidx);

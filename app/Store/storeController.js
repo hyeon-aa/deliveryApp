@@ -11,7 +11,7 @@ const {emit} = require("nodemon");
 
 exports.getStoreidx = async function (req, res) {
 
-  
+
     const storeidx = req.params.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
@@ -23,57 +23,8 @@ exports.getStoreidx = async function (req, res) {
 //음식점 카테고리 리스트 조회
 exports.getstorecategoryList = async function (req, res) {
 
-
     const storecategoryList = await storeProvider.retrievestorecategoryList();
     return res.send(response(baseResponse.STORECATEGORYLIST_SUCCESS, storecategoryList));
-};
-
-
-//특정음식점 대표메뉴조회
-exports.getrmenuStoreidx = async function (req, res) {
-
-  
-    const storeidx = req.params.storeidx;
-
-    if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
-
-    const rmenustoreByStoreidx = await storeProvider.retrievermenuStore(storeidx);
-    return res.send(response(baseResponse.SUCCESS, rmenustoreByStoreidx));
-};
-
-//특정음식점 메뉴 카테고리 조회
-exports.getmenucategory = async function (req, res) {
-
-    const storeidx = req.params.storeidx;
-
-    if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
-
-    const menucategoryByStoreidx = await storeProvider.retrievermenucategory(storeidx);
-    return res.send(response(baseResponse.SUCCESS, menucategoryByStoreidx));
-};
-
-//카테고리별 메뉴 조회
-exports.getmenubycategory = async function (req, res) {
-
-  
-    const storeidx = req.params.storeidx;
-
-    if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
-
-    const getmenubycategoryByStoreidx = await storeProvider.retrievemenubycategory(storeidx);
-    return res.send(response(baseResponse.SUCCESS, getmenubycategoryByStoreidx));
-};
-
-//메뉴 음식점 조회
-exports.getmenuorigin = async function (req, res) {
-
-   
-    const storeidx = req.params.storeidx;
-
-    if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
-
-    const getmenuoriginByStoreidx = await storeProvider.retrievemenuorigin(storeidx);
-    return res.send(response(baseResponse.SUCCESS, getmenuoriginByStoreidx));
 };
 
 
@@ -129,10 +80,10 @@ exports.getcategoryStoreidx = async function (req, res) {
 
 };
 
-//최종 음식점 메뉴 조회
+//음식점 메뉴 조회
 exports.getmenuInfo = async function (req, res) {
 
-  
+
     const storeidx = req.params.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
@@ -145,7 +96,7 @@ exports.getmenuInfo = async function (req, res) {
 //가게 상세 정보
 exports.getstoredetail = async function (req, res) {
 
-  
+    
     const storeidx = req.query.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
