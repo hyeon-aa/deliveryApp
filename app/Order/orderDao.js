@@ -1,5 +1,6 @@
-//주문정보조회
+//상세주문정보
 async function selectorderInfo(connection, [useridx,orderidx]) {
+    //주문정보
     const selectorderInfoQuery = `
         select storename,deliverystatus,(A.paymentamount-ifnull(B.coupon,0)-ifnull(pointuse,0))as 'paymentamount',orderamount,deliverytip,orderdate,orderidx,ordermenu,
                ifnull(B.coupon,0)as 'coupond',ifnull(pointuse,0) as 'point',paymethod,orderdate,useraddress,userphoneNum,storerequest,riderrequest from
@@ -29,6 +30,7 @@ async function selectorderInfo(connection, [useridx,orderidx]) {
                     and Coupon.couponidx=Havecoupon.couponidx) as B
                           on A.useridx=B.useridx and A.storeidx=B.storeidx;
     `;
+    //주문메뉴
     const selectorderInfomenuQuery = `
         select Menu.menuname,((Menudetail.addtip)+(Menu.menuprice))as 'price',Menudetail.addmenu,ShoppingBasket.menuquantity
         from OrderInfo join OrderItem on OrderInfo.orderidx=OrderItem.orderidx
