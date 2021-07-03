@@ -10,12 +10,9 @@ const {emit} = require("nodemon");
 //리뷰등록
 exports.poststorereview = async function (req, res) {
 
-    /**
-     * Body: email, password, nickname
-     */
     const useridx = req.verifiedToken.useridx ;
-    const {storeidx,orderidx,userstarRating,usercomment,status} = req.body;
-    
+    const {storeidx,orderidx,userstarRating,usercomment,reviewImgPath} = req.body;
+
 
     // 빈 값 체크
     if (!storeidx)
@@ -23,7 +20,6 @@ exports.poststorereview = async function (req, res) {
 
     if (!userstarRating) return res.send(errResponse(baseResponse.STARRATING_EMPTY));
 
-    // 빈 값 체크
     if (!usercomment)
         return res.send(response(baseResponse.REVIEWCOMMENT_EMPTY ));
 
@@ -35,13 +31,11 @@ exports.poststorereview = async function (req, res) {
     if (userstarRating<1 || userstarRating >5)
         return res.send(response(baseResponse.STARRATING_LENGTH ));
 
-
-
-    const signUpResponse = await storereviewService.createstorereview(
-        useridx,storeidx,orderidx,userstarRating,usercomment
+    const postreviewResponse = await storereviewService.createstorereview(
+        useridx,storeidx,orderidx,userstarRating,usercomment,reviewImgPath
     );
 
-    return res.send(signUpResponse);
+    return res.send(postreviewResponse);
 };
 
 //리뷰 삭제

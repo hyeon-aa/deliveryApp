@@ -32,18 +32,29 @@ async function selectuserorderID(connection, useridx) {
 }
 
 // 가게 리뷰 등록
-async function insertstorereview(connection, insertstorereviewParams) {
+async function insertstorereview(connection, [useridx,storeidx,orderidx,userstarRating,usercomment,reviewImgPath]) {
     const insertstorereviewQuery = `
         INSERT INTO Review(useridx,storeidx,orderidx,userstarRating,usercomment)
         VALUES (?, ?,?,?,?);
     `;
+    const insertReviewImgQuery = `INSERT INTO ReviewMenuImage(reviewidx, reviewImgPath) VALUES(?, ?);`;
+    const lastInsertIdQuery = `select LAST_INSERT_ID() insertidx;`;
+
+    await connection.beginTransaction();
     const insertstorereviewRow = await connection.query(
         insertstorereviewQuery,
-        insertstorereviewParams
+       [useridx,storeidx,orderidx,userstarRating,usercomment]
     );
-
+    const reviewidx = await connection.query(lastInsertIdQuery);
+    console.log(reviewidx);
+    const insertstorereviewImgRow = await connection.query(
+        insertReviewImgQuery,
+        [reviewidx[0][0].insertidx, reviewImgPath]
+    );
+    await connection.commit();
     return insertstorereviewRow;
 }
+
 
 //리뷰 리스트 조회
 async function selectStorereviewList(connection, storeidx) {
