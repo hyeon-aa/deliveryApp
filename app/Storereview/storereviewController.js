@@ -41,7 +41,6 @@ exports.poststorereview = async function (req, res) {
 //리뷰 삭제
 exports.patchstorereview = async function (req, res) {
 
-    // jwt - userId, path variable :userId
 
     const userIdFromJWT = req.verifiedToken.useridx
 
@@ -61,7 +60,6 @@ exports.patchstorereview = async function (req, res) {
 //리뷰 수정
 exports.patchstorereviewcontent = async function (req, res) {
 
-    // jwt - userId, path variable :userId
 
     const userIdFromJWT = req.verifiedToken.useridx
 
@@ -89,9 +87,7 @@ exports.patchstorereviewcontent = async function (req, res) {
 //리뷰 리스트 조회
 exports.getStorereviewList = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
+
     const storeidx = req.query.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
@@ -103,9 +99,7 @@ exports.getStorereviewList = async function (req, res) {
 //리뷰 메뉴 추천여부 조회
 exports.getreviewmenurecommend = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
+
     const storeidx = req.query.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
@@ -117,9 +111,7 @@ exports.getreviewmenurecommend = async function (req, res) {
 //리뷰 사진 조회
 exports.getStorereviewimg = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
+
     const storeidx = req.query.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
@@ -131,9 +123,7 @@ exports.getStorereviewimg = async function (req, res) {
 //리뷰 보드 조회
 exports.getreviewBoard = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
+
     const storeidx = req.query.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
@@ -145,9 +135,7 @@ exports.getreviewBoard = async function (req, res) {
 //리뷰 댓글 개수 조회
 exports.getStorereviewcommentNum = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
+
     const storeidx = req.query.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
@@ -159,9 +147,7 @@ exports.getStorereviewcommentNum = async function (req, res) {
 //별점별 사용자 수 조회
 exports.getreviewpeople = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
+
     const storeidx = req.query.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
@@ -173,9 +159,7 @@ exports.getreviewpeople = async function (req, res) {
 //월별 리뷰 조회
 exports.getmonthreview = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
+
     const storeidx = req.query.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
@@ -187,9 +171,7 @@ exports.getmonthreview = async function (req, res) {
 //총 평점 조회
 exports.gettotalstar = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
+
     const storeidx = req.query.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
@@ -202,9 +184,7 @@ exports.gettotalstar = async function (req, res) {
 //리뷰 그래프 조회
 exports.getreviewgraph = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
+ 
     const storeidx = req.query.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
