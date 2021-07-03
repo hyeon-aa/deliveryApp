@@ -61,9 +61,10 @@ async function insertstorereview(connection, [useridx,storeidx,orderidx,userstar
     }
 }
 
-//리뷰 리스트 조회
-async function selectStorereviewList(connection, storeidx) {
-    const selectStorereviewListQuery = `
+//리뷰 보드 조회
+async function selectStorereviewBoard(connection, [storeidx,sort]) {
+    //리뷰 리스트
+    var selectStorereviewListQuery = `
         select distinct(Review.reviewidx),
                        User.username,
                        Menu.storeidx,
@@ -90,16 +91,9 @@ async function selectStorereviewList(connection, storeidx) {
                  left outer join User on User.useridx = Review.useridx
         where OrderInfo.storeidx = ?
           and Review.orderidx = OrderItem.orderidx
-        order by reviewidx;
     `;
-    const [StorereviewListRow] = await connection.query(selectStorereviewListQuery, storeidx);
-    console.log(storeidx);
-    return StorereviewListRow;
-}
-
-//리뷰 메뉴 추천여부 조회
-async function selectreviewmenurecommend(connection, storeidx) {
-    const selectreviewmenurecommendQuery = `
+    //리뷰 메뉴추천
+    var selectreviewmenurecommendQuery = `
     select User.username,Review.reviewidx,Menu.menuname,Menu.storeidx,Reviewmenurecommend.status AS 'recommend'
     from OrderItem left join Menu on Menu.menuidx=OrderItem.menuidx
     left join OrderInfo on OrderItem.orderidx=OrderInfo.orderidx
@@ -109,25 +103,35 @@ async function selectreviewmenurecommend(connection, storeidx) {
     and Reviewmenurecommend.menuidx=Menu.menuidx
     left outer join User on User.useridx=Review.useridx
     where OrderInfo.storeidx=? and Review.orderidx=OrderItem.orderidx
-    order by reviewidx;
     `;
-    const [reviewmenurecommendRow] = await connection.query(selectreviewmenurecommendQuery, storeidx);
-    console.log(storeidx);
-    return reviewmenurecommendRow;
-}
-
-//리뷰 사진 조회
-async function selectreviewimg(connection, storeidx) {
-    const selectreviewimgQuery = `
+    //리뷰 이미지
+    var selectreviewimgQuery = `
         select ReviewMenuImage.reviewImgpath,Review.reviewidx,User.username
         from ReviewMenuImage inner join Review on ReviewMenuImage.reviewidx=Review.reviewidx
                              inner join User on User.useridx=Review.useridx
-        where storeidx=?;
+        where storeidx=?
     `;
+    if (!sort || sort == 0) {
+        selectStorereviewListQuery += `order by updatedAt DESC `;
+    }
+    else if (sort == 1) {
+        selectStorereviewListQuery += ` order by userstarRating DESC`;
+    }
+    else if (sort == 2) {
+        selectStorereviewListQuery += ` order by userstarRating asc`;
+    }
+
     const [reviewimgRow] = await connection.query(selectreviewimgQuery, storeidx);
+    const [reviewmenurecommendRow] = await connection.query(selectreviewmenurecommendQuery, storeidx);
+    const [StorereviewListRow] = await connection.query(selectStorereviewListQuery, storeidx);
     console.log(storeidx);
-    return reviewimgRow;
+    reviewarray=[];
+    reviewarray.push(StorereviewListRow);
+    reviewarray.push(reviewmenurecommendRow);
+    reviewarray.push(reviewimgRow);
+    return reviewarray;
 }
+
 
 //리뷰 댓글 수 조회
 async function selectreviewcommentNum(connection, storeidx) {
@@ -144,8 +148,9 @@ async function selectreviewcommentNum(connection, storeidx) {
     return reviewcommentNumRow;
 }
 
-//리뷰 별점별 사람수
-async function selectreviewpeople(connection, storeidx) {
+//리뷰 그래프
+async function selectreviewgraph(connection, storeidx) {
+    //리뷰 별점별 사람수
     const selectreviewpeopleQuery = `
         select * from(
                          select star as 'userstarRating', count(R.useridx) AS 'num by star'
@@ -153,13 +158,7 @@ async function selectreviewpeople(connection, storeidx) {
                                   left join Review R on Starrate.star=R.userstarRating and storeidx=?
                          group by star)a;
     `;
-    const [reviewpeopleRow] = await connection.query(selectreviewpeopleQuery, storeidx);
-    console.log(storeidx);
-    return reviewpeopleRow;
-}
-
-//월별 리뷰
-async function selectmonthreview(connection, storeidx) {
+    //월별 리뷰
     const selectmonthreviewQuery = `
         select *
         from(
@@ -170,13 +169,7 @@ async function selectmonthreview(connection, storeidx) {
             )a
         where date between date_format(date_add(now(),interval -6 month),'%Y-%m') and date_format(now(),'%Y-%m');
     `;
-    const [monthreviewRow] = await connection.query(selectmonthreviewQuery, storeidx);
-    console.log(storeidx);
-    return monthreviewRow;
-}
-
-//총 평점
-async function selecttotalstar(connection, storeidx) {
+    //총평점
     const selecttotalstarQuery = `
         select S.storename,round(avg(Review.userstarRating),1) AS "totalstarrate"
         from (select storename,storeidx from Store) S left join Review
@@ -185,9 +178,15 @@ async function selecttotalstar(connection, storeidx) {
         group by S.storeidx;
     `;
     const [totalstarRow] = await connection.query(selecttotalstarQuery, storeidx);
-    console.log(storeidx);
-    return totalstarRow;
+    const [monthreviewRow] = await connection.query(selectmonthreviewQuery, storeidx);
+    const [reviewpeopleRow] = await connection.query(selectreviewpeopleQuery, storeidx);
+    reviewgrapharray=[];
+    reviewgrapharray.push(reviewpeopleRow);
+    reviewgrapharray.push(monthreviewRow);
+    reviewgrapharray.push(totalstarRow);
+    return reviewgrapharray;
 }
+
 
 //리뷰 수정
 async function updateReviewcontent(connection,userstarRating,usercomment,useridx,reviewidx) {
@@ -213,17 +212,12 @@ async function updateReview(connection, useridx,reviewidx,status) {
 
 module.exports ={
     insertstorereview,
-    selectStorereviewList,
-    selectreviewmenurecommend,
+    selectStorereviewBoard,
     selectreviewcommentNum,
-    selectmonthreview,
-    selectreviewpeople,
-    selectmonthreview,
-    selecttotalstar,
     selectUserID,
     selectOrderID,
-    selectreviewimg,
     updateReview,
     updateReviewcontent,
-    selectuserorderID
+    selectuserorderID,
+    selectreviewgraph
 };

@@ -83,52 +83,18 @@ exports.patchstorereviewcontent = async function (req, res) {
     }
 };
 
-
-//리뷰 리스트 조회
-exports.getStorereviewList = async function (req, res) {
-
-
-    const storeidx = req.query.storeidx;
-
-    if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
-
-    const StorereiviewListByStoreidx = await storereviewProvider.retrieveStorereviewList(storeidx);
-    return res.send(response(baseResponse.SUCCESS, StorereiviewListByStoreidx));
-};
-
-//리뷰 메뉴 추천여부 조회
-exports.getreviewmenurecommend = async function (req, res) {
-
-
-    const storeidx = req.query.storeidx;
-
-    if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
-
-    const reviewmenurecommendByStoreidx = await storereviewProvider.retrievereviewmenurecommend(storeidx);
-    return res.send(response(baseResponse.SUCCESS,reviewmenurecommendByStoreidx));
-};
-
-//리뷰 사진 조회
-exports.getStorereviewimg = async function (req, res) {
-
-
-    const storeidx = req.query.storeidx;
-
-    if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
-
-    const reviewimgByStoreidx = await storereviewProvider.retrievereviewimg(storeidx);
-    return res.send(response(baseResponse.SUCCESS,reviewimgByStoreidx));
-};
-
 //리뷰 보드 조회
 exports.getreviewBoard = async function (req, res) {
 
 
     const storeidx = req.query.storeidx;
+    const sort = req.query.sort;
+    // const page = req.query.page;
+    // const size = req.query.size;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
 
-    const reviewBoardByStoreidx = await storereviewProvider.retrievereviewBoard(storeidx);
+    const reviewBoardByStoreidx = await storereviewProvider.retrievereviewBoard([storeidx,sort]);
     return res.send(response(baseResponse.REVIEWBOARD_SUCCESS,reviewBoardByStoreidx));
 };
 
@@ -144,47 +110,10 @@ exports.getStorereviewcommentNum = async function (req, res) {
     return res.send(response(baseResponse.REVIEWCOMMENTNUM_SUCCESS,StorereviewcommentNumByStoreidx));
 };
 
-//별점별 사용자 수 조회
-exports.getreviewpeople = async function (req, res) {
-
-
-    const storeidx = req.query.storeidx;
-
-    if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
-
-    const StorereviewpeopleByStoreidx = await storereviewProvider.retrievereviewpeople(storeidx);
-    return res.send(response(baseResponse.SUCCESS,StorereviewpeopleByStoreidx));
-};
-
-//월별 리뷰 조회
-exports.getmonthreview = async function (req, res) {
-
-
-    const storeidx = req.query.storeidx;
-
-    if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
-
-    const monthreviewByStoreidx = await storereviewProvider.retrievemonthreview(storeidx);
-    return res.send(response(baseResponse.SUCCESS,monthreviewByStoreidx));
-};
-
-//총 평점 조회
-exports.gettotalstar = async function (req, res) {
-
-
-    const storeidx = req.query.storeidx;
-
-    if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
-
-    const totalstarByStoreidx = await storereviewProvider.retrievetotalstar(storeidx);
-    return res.send(response(baseResponse.SUCCESS,totalstarByStoreidx));
-};
-
-
 //리뷰 그래프 조회
 exports.getreviewgraph = async function (req, res) {
 
- 
+
     const storeidx = req.query.storeidx;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
