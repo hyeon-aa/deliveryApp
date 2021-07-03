@@ -383,23 +383,6 @@ exports.getusersearch = async function (req, res) {
     return res.send(response(baseResponse.SEARCHINFO_SUCCESS,usersearchByUserId));
 };
 
-//내가 쓴 리뷰 조회
-exports.getmyreview = async function (req, res) {
-
-    const useridx = req.verifiedToken.useridx ;
-
-    const myreviewByUserId = await userProvider.retrievemyreview(useridx);
-    return res.send(response(baseResponse.MYREVIEW_SUCCESS,myreviewByUserId));
-};
-
-//내가 쓴 리뷰 이미지  조회
-exports.getmyreviewimg = async function (req, res) {
-    
-    const useridx = req.verifiedToken.useridx ;
-
-    const myreviewimgByUserId = await userProvider.retrievemyreviewimg(useridx);
-    return res.send(response(baseResponse.MYREVIEW_SUCCESS,myreviewimgByUserId));
-};
 
 //내가 쓴 리뷰 정보  조회
 exports.getmyreviewInfo = async function (req, res) {
