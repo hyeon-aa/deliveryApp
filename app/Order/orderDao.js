@@ -29,12 +29,6 @@ async function selectorderInfo(connection, [useridx,orderidx]) {
                     and Coupon.couponidx=Havecoupon.couponidx) as B
                           on A.useridx=B.useridx and A.storeidx=B.storeidx;
     `;
-    const [orderInfoRow] = await connection.query(selectorderInfoQuery,[useridx,orderidx]);
-    return orderInfoRow;
-}
-
-//주문정보 메뉴조회
-async function selectorderInfomenu(connection, [useridx,orderidx]) {
     const selectorderInfomenuQuery = `
         select Menu.menuname,((Menudetail.addtip)+(Menu.menuprice))as 'price',Menudetail.addmenu,ShoppingBasket.menuquantity
         from OrderInfo join OrderItem on OrderInfo.orderidx=OrderItem.orderidx
@@ -43,27 +37,28 @@ async function selectorderInfomenu(connection, [useridx,orderidx]) {
                        left join ShoppingBasket on OrderInfo.basketidx=ShoppingBasket.basketidx and ShoppingBasket.menudetailidx=OrderItem.menudetailidx
         where  OrderInfo.orderidx=?;
     `;
+    const [orderInfoRow] = await connection.query(selectorderInfoQuery,[useridx,orderidx]);
     const [orderInfomenuRow] = await connection.query(selectorderInfomenuQuery, [useridx,orderidx]);
-    return orderInfomenuRow;
+    orderInfoarray=[];
+    orderInfoarray.push(orderInfoRow);
+    orderInfoarray.push(orderInfomenuRow);
+    return orderInfoarray;
 }
+
 
 
 //장바구니 조회
 async function selectshoppingbasket(connection, [useridx,basketidx]) {
+    //장바구니 메뉴
     const selectshoppingbasketQuery = `
         select Menu.menuname,((Menudetail.addtip)+(Menu.menuprice))as 'price',ShoppingBasket.menuquantity,sum(((Menudetail.addtip)+(Menu.menuprice))*ShoppingBasket.menuquantity) as totalprice
              ,Menudetail.addmenu
         from Menu inner join ShoppingBasket
                              on Menu.menuidx=ShoppingBasket.menuidx and ShoppingBasket.basketidx=?
                   join Menudetail on Menudetail.menudetailidx=ShoppingBasket.menudetailidx
-        group by addmenu,menuname;
+        group by addmenu,menuname
     `;
-    const [shoppingbasketRow] = await connection.query(selectshoppingbasketQuery, basketidx);
-    return shoppingbasketRow;
-}
-
-//장바구니 합계 조회
-async function selectshoppingbaskettot(connection, [useridx,basketidx]) {
+    //장바구니 가격 합
     const selectshoppingbaskettotQuery = `
         select sum(((Menudetail.addtip)+(Menu.menuprice))*ShoppingBasket.menuquantity) as baskettotal
         from Menu inner join ShoppingBasket
@@ -71,9 +66,14 @@ async function selectshoppingbaskettot(connection, [useridx,basketidx]) {
                   join Menudetail on Menudetail.menudetailidx=ShoppingBasket.menudetailidx
         group by ShoppingBasket.basketidx;
     `;
-    const [shoppingbaskettotRow] = await connection.query(selectshoppingbaskettotQuery, basketidx);
-    return shoppingbaskettotRow;
+    const [shoppingbasketRow] = await connection.query(selectshoppingbasketQuery,basketidx);
+    const [shoppingbaskettotRow] = await connection.query(selectshoppingbaskettotQuery , basketidx);
+    shoppingbasketarray=[];
+    shoppingbasketarray.push(shoppingbasketRow);
+    shoppingbasketarray.push(shoppingbaskettotRow);
+    return shoppingbasketarray;
 }
+
 
 //장바구니 메뉴 등록
 async function insertbasketmenu(connection, insertbasketmenuParams) {
@@ -166,11 +166,10 @@ async function updatebasketinfo(connection,menuidx,menudetailidx,menuquantity,us
 }
 
 
+
 module.exports ={
     selectorderInfo,
-    selectorderInfomenu,
     selectshoppingbasket,
-    selectshoppingbaskettot,
     insertbasketmenu,
     selectUserID,
     updatebasket,

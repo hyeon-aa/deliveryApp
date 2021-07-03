@@ -16,9 +16,6 @@ const {connect} = require("http2");
 // 장바구니 메뉴 등록
 exports.createbasketmenu = async function (useridx,basketidx,menuidx,menudetailidx,menuquantity) {
     try {
-      //  const userRows = await orderProvider.userIDCheck(useridx);
-         //    if (userRows.length === 0)
-         //   return errResponse(baseResponse.USER_USERID_NOT_EXIST);
 
         const menuRows = await orderProvider.menuIDCheck(menuidx);
         if (menuRows.length === 0)

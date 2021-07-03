@@ -3,11 +3,13 @@ const orderProvider = require("../../app/Order/orderProvider");
 const orderService = require("../../app/Order/orderService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
+const secret_config = require("../../../config//secret");
 
+const axios = require("axios");
 const regexEmail = require("regex-email");
 const {emit} = require("nodemon");
 
-//주문정보 조회
+//상세주문정보
 exports.getorderInfo= async function (req, res) {
 
 
@@ -17,76 +19,21 @@ exports.getorderInfo= async function (req, res) {
     if (!orderidx) return res.send(errResponse(baseResponse.ORDER_ORDERIDX_EMPTY));
 
     const orderInfoByUserId = await orderProvider.retrieveorderInfo([useridx,orderidx]);
-    return res.send(response(baseResponse.SUCCESS, orderInfoByUserId));
-};
-
-//주문정보 메뉴 조회
-exports.getorderInfomenu= async function (req, res) {
-
-   
-    const useridx = req.verifiedToken.useridx ;
-    const orderidx = req.query.orderidx;
-
-    if (!orderidx) return res.send(errResponse(baseResponse.ORDER_ORDERIDX_EMPTY));
-
-    const orderInfomenuByUserId = await orderProvider.retrieveorderInfomenu([useridx,orderidx]);
-    return res.send(response(baseResponse.SUCCESS, orderInfomenuByUserId));
-};
-
-//총 상세주문정보
-exports.getorderInfotot= async function (req, res) {
-
-
-    const useridx = req.verifiedToken.useridx ;
-    const orderidx = req.query.orderidx;
-
-    if (!orderidx) return res.send(errResponse(baseResponse.ORDER_ORDERIDX_EMPTY));
-
-    const orderInfototByUserId = await orderProvider.retrieveorderInfotot([useridx,orderidx]);
-    return res.send(response(baseResponse.ORDERINFOTOT_SUCCESS, orderInfototByUserId));
+    return res.send(response(baseResponse.ORDERINFOTOT_SUCCESS, orderInfoByUserId));
 };
 
 
-//장바구니 조회
-exports.getshoppingbasket = async function (req, res) {
-
-
-    const useridx = req.verifiedToken.useridx ;
-    const basketidx = req.query.basketidx;
-
-
-    if (!basketidx) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
-
-    const shoppingbasketByUserId = await orderProvider.retrieveshoppingbasket( [useridx,basketidx]);
-    return res.send(response(baseResponse.SUCCESS,shoppingbasketByUserId));
-};
-
-//장바구니 합계 조회
-exports.getshoppingbaskettot = async function (req, res) {
-
-
-    const useridx = req.verifiedToken.useridx ;
-    const basketidx = req.query.basketidx;
-
-
-    if (!basketidx) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
-
-    const shoppingbaskettotByUserId = await orderProvider.retrieveshoppingbaskettot( [useridx,basketidx]);
-    return res.send(response(baseResponse.SUCCESS,shoppingbaskettotByUserId));
-};
 
 //총 장바구니 조회
-exports.getshoppingbasketF = async function (req, res) {
-
+exports.getshoppingbasket = async function (req, res) {
 
     const useridx = req.verifiedToken.useridx ;
     const basketidx = req.query.basketidx;
-
 
     if (!basketidx) return res.send(errResponse(baseResponse.BASKET_BASKETIDX_EMPTY));
 
-    const shoppingbasketFByUserId = await orderProvider.retrieveshoppingbasketF( [useridx,basketidx]);
-    return res.send(response(baseResponse.BASKETF_SUCCESS,shoppingbasketFByUserId));
+    const shoppingbasketByUserId = await orderProvider.retrieveshoppingbasket([useridx,basketidx]);
+    return res.send(response(baseResponse.BASKETF_SUCCESS,shoppingbasketByUserId));
 };
 
 
@@ -184,3 +131,54 @@ exports.patchbasketinfo= async function (req, res) {
         return res.send(editbasketinfo);
     }
 };
+
+//카카오페이
+/*
+exports.payorder = async function (req, res) {
+
+const useridx = req.verifiedToken.useridx;
+const basketidx = req.params.basketidx;
+const header = `KakaoAK ${secret_config.KAKAO_ADMIN_KEY}`;
+const api_url = `https://kapi.kakao.com/v1/payment/ready`;
+const cid = "TC0ONETIME";
+
+//const orderInfoResult = await orderProvider.retrieveorderInfotot([useridx,orderidx]);
+// console.log('order',orderInfoResult[0]);
+// var resultArray = Object.values(JSON.parse(JSON.stringify(orderInfoResult)));
+// console.log('order3',orderInfoResult[0][0].storename);
+// console.log('order2',resultArray);
+const basketInfoResult = await orderProvider.retrieveshoppingbasket([useridx,basketidx]);
+const baskettotResult = await orderProvider.retrieveshoppingbaskettot ([useridx,basketidx]);
+console.log(basketInfoResult);
+console.log(baskettotResult);
+
+axios({
+    url: api_url,
+    method: "post",
+    headers: {
+        Authorization: header,
+    },
+    params: {
+        cid: cid,
+        partner_order_id:
+        partner_user_id: useridx,
+        item_name:
+        quantity: 1,
+        total_amount: baskettotResult.baskettotal,
+        tax_free_amount: 0,
+        approval_url: `http://localhost:3000/app/orders/success`,
+        cancel_url: 'http://localhost:3000/app/orders/cancel',
+        fail_url: 'http://localhost:3000/app/orders/fail'
+    },
+})
+    .then(function (response){
+        console.log(response.data);
+        pay=response.data.next_redirect_pc_url;
+        console.log('pay',pay);
+    })
+    .catch((err) => {
+       console.log(err);
+    });
+    return res.send(pay);
+};
+*/
