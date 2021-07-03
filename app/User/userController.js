@@ -281,11 +281,7 @@ exports.getUsers = async function (req, res) {
     }
 };
 
-/**
- * API No. 3
- * API Name : 특정 유저 조회 API
- * [GET] /app/users/{userId}
- */
+//특정 유저 조회
 exports.getUserById = async function (req, res) {
 
     /**
