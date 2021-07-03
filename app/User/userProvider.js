@@ -118,38 +118,14 @@ exports.retrieveusersearch= async function (useridx) {
   return usersearchResult;
 };
 
-//내가 쓴 리뷰 조회
-exports.retrievemyreview= async function (useridx) {
+//내가 쓴 리뷰 정보 조회
+exports.retrievemyreviewInfo= async function (useridx) {
   const connection = await pool.getConnection(async (conn) => conn);
   const myreviewResult = await userDao.selectmyreview(connection, useridx);
 
   connection.release();
 
   return myreviewResult;
-};
-
-//내가 쓴 리뷰 이미지 조회
-exports.retrievemyreviewimg= async function (useridx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const myreviewimgResult = await userDao.selectmyreviewimg(connection, useridx);
-
-  connection.release();
-
-  return myreviewimgResult;
-};
-
-//내가 쓴 리뷰 정보 조회
-exports.retrievemyreviewInfo= async function (useridx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const myreviewResult = await userDao.selectmyreview(connection, useridx);
-  const myreviewimgResult = await userDao.selectmyreviewimg(connection, useridx);
-
-  connection.release();
-
-  var myreviewInfoArray=new Array();
-  myreviewInfoArray.push(myreviewResult);
-  myreviewInfoArray.push(myreviewimgResult);
-  return myreviewInfoArray
 
 };
 

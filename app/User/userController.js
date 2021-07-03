@@ -92,8 +92,6 @@ exports.postpointsave = async function (req, res) {
 //유저 포인트 사용
 exports.postpointuse = async function (req, res) {
 
-
-
     const  useridx= req.verifiedToken.useridx;
     const {orderidx,pointuse} = req.body;
 
@@ -109,6 +107,50 @@ exports.postpointuse = async function (req, res) {
 
     return res.send(pointuseResponse);
 };
+
+//유저 주소 등록
+/*
+exports.postaddress = async function (req, res) {
+
+    const useridx = req.verifiedToken.useridx ;
+    const {useraddress,dongname,latitude,longitude,base} = req.body;
+
+    // 주소 체크
+    if (!useraddress)
+        return res.send(response(baseResponse.USER_ADDRESS_EMPTY));
+
+    // 동이름 체크
+    if (!dongname)
+        return res.send(response(baseResponse.USER_DONGNAME_EMPTY));
+
+    // 위도 체크
+    if (!latitude)
+        return res.send(response(baseResponse.USER_LATITUDE_EMPTY));
+
+    // 위도 길이 체크
+    if (latitude>43 || latitude<33)
+        return res.send(response(baseResponse.LATITUDE_LENGTH));
+
+    // 경도 체크
+    if (!longitude)
+        return res.send(response(baseResponse. USER_LONGITUDE_EMPTY));
+
+    // 경도 길이 체크
+    if (longitude>132 || longitude<124)
+        return res.send(response(baseResponse.LONGITUDE_LENGTH));
+
+    // 기본배송지여부 체크
+    if (!base)
+        return res.send(response(baseResponse.USER_BASE_EMPTY));
+
+    const addressResponse = await userService.createaddress(
+        useridx,useraddress,dongname,latitude,longitude,base
+    );
+
+
+    return res.send(addressResponse);
+};
+*/
 
 //유저 주소 등록2
 exports.postaddress = async function (req, res) {
@@ -175,49 +217,6 @@ exports.postaddress = async function (req, res) {
     return res.send(addressResponse);
 };
 
-//유저 주소 등록
-/*
-exports.postaddress = async function (req, res) {
-
-    const useridx = req.verifiedToken.useridx ;
-    const {useraddress,dongname,latitude,longitude,base} = req.body;
-
-    // 주소 체크
-    if (!useraddress)
-        return res.send(response(baseResponse.USER_ADDRESS_EMPTY));
-
-    // 동이름 체크
-    if (!dongname)
-        return res.send(response(baseResponse.USER_DONGNAME_EMPTY));
-
-    // 위도 체크
-    if (!latitude)
-        return res.send(response(baseResponse.USER_LATITUDE_EMPTY));
-
-    // 위도 길이 체크
-    if (latitude>43 || latitude<33)
-        return res.send(response(baseResponse.LATITUDE_LENGTH));
-
-    // 경도 체크
-    if (!longitude)
-        return res.send(response(baseResponse. USER_LONGITUDE_EMPTY));
-
-    // 경도 길이 체크
-    if (longitude>132 || longitude<124)
-        return res.send(response(baseResponse.LONGITUDE_LENGTH));
-
-    // 기본배송지여부 체크
-    if (!base)
-        return res.send(response(baseResponse.USER_BASE_EMPTY));
-
-    const addressResponse = await userService.createaddress(
-        useridx,useraddress,dongname,latitude,longitude,base
-    );
-
-
-    return res.send(addressResponse);
-};
-*/
 
 //유저 검색내용 등록
 exports.postsearchcontent = async function (req, res) {
@@ -395,8 +394,7 @@ exports.getmyreview = async function (req, res) {
 
 //내가 쓴 리뷰 이미지  조회
 exports.getmyreviewimg = async function (req, res) {
-
-  
+    
     const useridx = req.verifiedToken.useridx ;
 
     const myreviewimgByUserId = await userProvider.retrievemyreviewimg(useridx);

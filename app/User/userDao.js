@@ -234,12 +234,6 @@ async function selectmyreview(connection, useridx) {
           and Review.orderidx = OrderItem.orderidx
         order by reviewidx
     `;
-    const [myreviewRow] = await connection.query(selectmyreviewQuery, useridx);
-    return myreviewRow;
-}
-
-//리뷰 사진 조회
-async function selectmyreviewimg(connection, useridx) {
     const selectmyreviewimgQuery = `
         select ReviewMenuImage.reviewImgpath,Review.reviewidx,User.username
         from ReviewMenuImage inner join Review on ReviewMenuImage.reviewidx=Review.reviewidx
@@ -247,8 +241,13 @@ async function selectmyreviewimg(connection, useridx) {
         where User.useridx=?;
     `;
     const [myreviewimgRow] = await connection.query(selectmyreviewimgQuery, useridx);
-    return myreviewimgRow;
+    const [myreviewRow] = await connection.query(selectmyreviewQuery, useridx);
+    myreviewarray=[];
+    myreviewarray.push(myreviewRow);
+    myreviewarray.push(myreviewimgRow);
+    return myreviewarray;
 }
+
 
 
 // 유저 생성
@@ -430,7 +429,7 @@ async function updateuserlikestore(connection, useridx,storeidx,status) {
     return updateuserlikestoreRow[0];
 }
 
-//가게 주소 수정
+//유저 주소 삭제
 async function updateuseraddress(connection, useridx,useraddress,status) {
     const updateuseraddressQuery = `
   UPDATE Useraddress
@@ -459,7 +458,6 @@ module.exports = {
     insertsearchcontent,
     insertusercoupon,
     selectcouponidx,
-    selectmyreviewimg,
     selectuserpoint,
     selectuseraddress,
     insertuseraddress,

@@ -4,16 +4,16 @@ module.exports = function(app){
 
 
     //음식점 카테고리 리스트 조회
-    app.get('/app/stores/storecategorylists', store.getstorecategoryList);
+    app.get('/app/stores/storecategorylist', store.getstorecategoryList);
 
     //*가게상세 정보
-    app.get('/app/stores/storedetails', store.getstoredetail);
+    app.get('/app/stores/storedetail', store.getstoredetail);
 
     //*특정 음식점 조회
     app.get('/app/stores/:storeidx', store.getStoreidx);
 
     //*음식점 메뉴 조회 API
-    app.get('/app/stores/:storeidx/menuinfos', store.getmenuInfo);
+    app.get('/app/stores/:storeidx/menuinfo', store.getmenuInfo);
 
     //*주소에 따른 카테고리별 음식점 조회 API
     app.get('/app/stores',jwtMiddleware, store.getcategoryStoreidx);

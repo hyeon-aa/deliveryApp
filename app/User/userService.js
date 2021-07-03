@@ -66,6 +66,7 @@ exports.createlikestore = async function (useridx,storeidx) {
 };
 
 //유저 주소 등록
+/*
 exports.createaddress = async function (useridx,useraddress,dongname,latitude,longitude,base) {
     try {
 
@@ -87,7 +88,30 @@ exports.createaddress = async function (useridx,useraddress,dongname,latitude,lo
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+*/
 
+//유저 주소 등록2
+exports.createaddress = async function (useridx,useraddress,dongname,latitude,longitude,base) {
+    try {
+
+        const baseaddressRows = await userProvider.baseaddressCheck(useridx);
+        if (baseaddressRows.length === 1 && base===0)
+            return errResponse(baseResponse. BASEADDRESS_ONLY_ONE);
+
+        const insertuseraddressParams = [useridx,useraddress,dongname,latitude,longitude,base];
+
+        const connection = await pool.getConnection(async (conn) => conn);
+
+        const useraddressResult = await userDao.insertuseraddress(connection, insertuseraddressParams);
+
+        connection.release();
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - createUser Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
 
 
 
