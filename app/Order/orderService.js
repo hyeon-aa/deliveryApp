@@ -27,6 +27,7 @@ exports.createbasketmenu = async function (useridx,basketidx,menuidx,menudetaili
 
         const basketmenuResult = await orderDao.insertbasketmenu(connection, insertbasketmenuParams);
 
+        //최소주문금액 확인
         const basketRows = await orderProvider.basketminCheck(basketidx);
         console.log(basketRows);
         var bArray=new Array();
