@@ -9,10 +9,7 @@ const {emit} = require("nodemon");
 
 exports.getsearchrank = async function (req, res) {
 
-    /**
-     * Path Variable: userId
-     */
-
+  
     const searchrank = await searchProvider.retrievesearchrank();
     return res.send(response(baseResponse.RANK_SUCCESS, searchrank));
 };
