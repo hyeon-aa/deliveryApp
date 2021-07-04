@@ -62,7 +62,7 @@ async function insertstorereview(connection, [useridx,storeidx,orderidx,userstar
 }
 
 //리뷰 보드 조회
-async function selectStorereviewBoard(connection, [storeidx,sort]) {
+async function selectStorereviewBoard(connection, storeidx) {
     //리뷰 리스트
     var selectStorereviewListQuery = `
         select distinct(Review.reviewidx),
@@ -92,45 +92,61 @@ async function selectStorereviewBoard(connection, [storeidx,sort]) {
         where OrderInfo.storeidx = ?
           and Review.orderidx = OrderItem.orderidx
     `;
-    //리뷰 메뉴추천
-    var selectreviewmenurecommendQuery = `
-    select User.username,Review.reviewidx,Menu.menuname,Menu.storeidx,Reviewmenurecommend.status AS 'recommend'
-    from OrderItem left join Menu on Menu.menuidx=OrderItem.menuidx
-    left join OrderInfo on OrderItem.orderidx=OrderInfo.orderidx
-    left join Review on Menu.storeidx=Review.storeidx
-    left join Store on Store.storeidx=Review.storeidx
-    left outer join Reviewmenurecommend on Review.reviewidx=Reviewmenurecommend.reviewidx
-    and Reviewmenurecommend.menuidx=Menu.menuidx
-    left outer join User on User.useridx=Review.useridx
-    where OrderInfo.storeidx=? and Review.orderidx=OrderItem.orderidx
-    `;
-    //리뷰 이미지
-    var selectreviewimgQuery = `
-        select ReviewMenuImage.reviewImgpath,Review.reviewidx,User.username
-        from ReviewMenuImage inner join Review on ReviewMenuImage.reviewidx=Review.reviewidx
-                             inner join User on User.useridx=Review.useridx
-        where storeidx=?
-    `;
-    if (!sort || sort == 0) {
-        selectStorereviewListQuery += `order by updatedAt DESC `;
-    }
-    else if (sort == 1) {
-        selectStorereviewListQuery += ` order by userstarRating DESC`;
-    }
-    else if (sort == 2) {
-        selectStorereviewListQuery += ` order by userstarRating asc`;
+    const [StorereviewListRow] = await connection.query(selectStorereviewListQuery, storeidx);
+    //console.log(StorereviewListRow);
+
+    var array3=[];
+    for (i in StorereviewListRow){
+        array3.push(StorereviewListRow[i].reviewidx);
+    };
+    console.log('주문',StorereviewListRow);
+    for (j in  StorereviewListRow) {
+        StorereviewListRow[j].reviewidx
+        //console.log("review번호",StorereviewListRow[j].reviewidx);
     }
 
-    const [reviewimgRow] = await connection.query(selectreviewimgQuery, storeidx);
-    const [reviewmenurecommendRow] = await connection.query(selectreviewmenurecommendQuery, storeidx);
-    const [StorereviewListRow] = await connection.query(selectStorereviewListQuery, storeidx);
-    console.log(storeidx);
-    reviewarray=[];
-    reviewarray.push(StorereviewListRow);
-    reviewarray.push(reviewmenurecommendRow);
-    reviewarray.push(reviewimgRow);
-    return reviewarray;
-}
+    //리뷰 메뉴추천
+   for (j in StorereviewListRow){
+        var selectreviewmenurecommendQuery = `
+            select Menu.menuname, Reviewmenurecommend.status AS 'recommend'
+            from OrderItem
+                     left join Menu on Menu.menuidx = OrderItem.menuidx
+                     left join OrderInfo on OrderItem.orderidx = OrderInfo.orderidx
+                     left join Review on Menu.storeidx = Review.storeidx
+                     left join Store on Store.storeidx = Review.storeidx
+                     left outer join Reviewmenurecommend on Review.reviewidx = Reviewmenurecommend.reviewidx
+                and Reviewmenurecommend.menuidx = Menu.menuidx
+                     left outer join User on User.useridx = Review.useridx
+           where Review.reviewidx = ${StorereviewListRow[j].reviewidx}
+              and Review.orderidx = OrderItem.orderidx
+        `;
+            const [reviewmenurecommendRow] = await connection.query(selectreviewmenurecommendQuery,
+                StorereviewListRow[j].reviewidx);
+            StorereviewListRow[j].reviewrecommend = reviewmenurecommendRow;
+           // console.log('추천',reviewmenurecommendRow);
+        }
+
+    //리뷰 이미지
+        for (j in StorereviewListRow){
+        var selectreviewimgQuery = `
+            select ReviewMenuImage.reviewImgpath
+            from ReviewMenuImage
+                     inner join Review on ReviewMenuImage.reviewidx = Review.reviewidx
+                     inner join User on User.useridx = Review.useridx
+              and Review.reviewidx = ${StorereviewListRow[j].reviewidx}
+        `;
+        const [reviewimgRow] = await connection.query(selectreviewimgQuery,
+            StorereviewListRow[j].reviewidx);
+        StorereviewListRow[j].reviewimg = reviewimgRow;
+        //console.log('이미지',reviewimgRow);
+    }
+
+        return StorereviewListRow;
+
+    };
+
+
+
 
 
 //리뷰 댓글 수 조회

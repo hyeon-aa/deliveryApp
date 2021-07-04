@@ -88,13 +88,12 @@ exports.getreviewBoard = async function (req, res) {
 
 
     const storeidx = req.query.storeidx;
-    const sort = req.query.sort;
-    // const page = req.query.page;
-    // const size = req.query.size;
+     // const page = req.query.page;
+     // const size = req.query.size;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
 
-    const reviewBoardByStoreidx = await storereviewProvider.retrievereviewBoard([storeidx,sort]);
+    const reviewBoardByStoreidx = await storereviewProvider.retrievereviewBoard(storeidx);
     return res.send(response(baseResponse.REVIEWBOARD_SUCCESS,reviewBoardByStoreidx));
 };
 
