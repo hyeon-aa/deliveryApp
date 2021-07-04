@@ -57,20 +57,32 @@ async function selectmenubyStoreidx(connection, storeidx) {
         from Menu,Store where Store.storeidx=Menu.storeidx
                           and Menu.storeidx=? and Menu.representative='Y';
     `;
+    const [rmenustoreRow] = await connection.query(selectrmenustoreidxQuery, storeidx);
     //메뉴 카테고리
     const selectmenucategoryQuery = `     
-select Menucategory.menucate as 'menucategory'
+    select Menucategory.menucate as 'menucategory',menucategoryidx
     from Menucategory
         where storeidx=?
         GROUP BY Menucategory.menucate; 
     `;
+    const [menucategoryRow] = await connection.query(selectmenucategoryQuery, storeidx);
+    console.log(menucategoryRow);
     //카테고리별 메뉴
-    const selectmenubycategoryQuery = `
-        select Menu.menuname,Menu.menuprice,Menudetail.addmenu,Menudetail.addtip,Menucategory.menucate as 'menucategory'
-        from Menucategory inner join Menu on Menucategory.menuidx=Menu.menuidx
-                          inner join Menudetail on Menu.menuidx=Menudetail.menuidx
-        where Menu.storeidx=?;
-    `;
+    for (j in menucategoryRow) {
+        const selectmenubycategoryQuery = `
+            select Menu.menuname,
+                   Menu.menuprice,
+                   Menudetail.addmenu,
+                   Menudetail.addtip
+            from Menucategory
+                     inner join Menu on Menucategory.menuidx = Menu.menuidx
+                     inner join Menudetail on Menu.menuidx = Menudetail.menuidx
+            where Menucategory.menucategoryidx=${menucategoryRow[j].menucategoryidx} 
+        `;
+        const [menubycategoryRow] = await connection.query(selectmenubycategoryQuery,
+            menucategoryRow[j].menucategoryidx);
+        menucategoryRow[j].catemenu= menubycategoryRow;
+    }
     //원산지 표기
     const selectmenuoriginQuery= `
         select countryoforigin
@@ -78,13 +90,9 @@ select Menucategory.menucate as 'menucategory'
         where StoreInfo.storeidx=?;
     `;
     const [menuoriginRow] = await connection.query(selectmenuoriginQuery, storeidx);
-    const [menubycategoryRow] = await connection.query(selectmenubycategoryQuery, storeidx);
-    const [menucategoryRow] = await connection.query(selectmenucategoryQuery, storeidx);
-    const [rmenustoreRow] = await connection.query(selectrmenustoreidxQuery, storeidx);
     menuarray=[];
     menuarray.push(rmenustoreRow);
     menuarray.push(menucategoryRow);
-    menuarray.push(menubycategoryRow);
     menuarray.push(menuoriginRow);
     return menuarray;
 }
