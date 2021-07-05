@@ -19,7 +19,7 @@ async function selectorderInfo(connection, [useridx,orderidx]) {
                       join Useraddress  on Useraddress.dongname=Delivery.dongname  and Useraddress.base=0
                       join User on Useraddress.useridx=User.useridx and OrderInfo.useridx=Useraddress.useridx
                       join Menu on Menu.storeidx=Delivery.storeidx
-                      join ShoppingBasket on Menu.menuidx=ShoppingBasket.menuidx and OrderInfo.basketidx=ShoppingBasket.basketidx
+                      join ShoppingBasket on Menu.menuidx=ShoppingBasket.menuidx and OrderInfo.basketidx=ShoppingBasket.basketidx and ShoppingBasket.status='Y'
                       join Menudetail on ShoppingBasket.menudetailidx=Menudetail.menudetailidx
                       left join PointUse on OrderInfo.orderidx= PointUse.orderidx
              where  OrderInfo.useridx=? and OrderInfo.orderidx=?)as A
@@ -27,7 +27,7 @@ async function selectorderInfo(connection, [useridx,orderidx]) {
                 select ifnull(Coupon.coupondiscount,0) as 'coupon',Coupon.couponidx,OrderInfo.useridx,OrderInfo.storeidx
                 from Coupon right join OrderInfo on OrderInfo.storeidx=Coupon.storeidx
                             right join Havecoupon on Havecoupon.useridx=OrderInfo.useridx
-                    and Coupon.couponidx=Havecoupon.couponidx) as B
+                    and Coupon.couponidx=Havecoupon.couponidx and validity>current_timestamp()) as B
                           on A.useridx=B.useridx and A.storeidx=B.storeidx;
     `;
     //주문메뉴
@@ -36,7 +36,7 @@ async function selectorderInfo(connection, [useridx,orderidx]) {
         from OrderInfo join OrderItem on OrderInfo.orderidx=OrderItem.orderidx
                        join Menu on OrderItem.menuidx=Menu.menuidx
                        join Menudetail on OrderItem.menudetailidx=Menudetail.menudetailidx
-                       left join ShoppingBasket on OrderInfo.basketidx=ShoppingBasket.basketidx and ShoppingBasket.menudetailidx=OrderItem.menudetailidx
+                       join ShoppingBasket on OrderInfo.basketidx=ShoppingBasket.basketidx and ShoppingBasket.menudetailidx=OrderItem.menudetailidx and ShoppingBasket.status='Y'
         where  OrderInfo.orderidx=?;
     `;
     const [orderInfoRow] = await connection.query(selectorderInfoQuery,[useridx,orderidx]);
@@ -56,17 +56,17 @@ async function selectshoppingbasket(connection, [useridx,basketidx]) {
         select Menu.menuname,((Menudetail.addtip)+(Menu.menuprice))as 'price',ShoppingBasket.menuquantity,sum(((Menudetail.addtip)+(Menu.menuprice))*ShoppingBasket.menuquantity) as totalprice
              ,Menudetail.addmenu
         from Menu inner join ShoppingBasket
-                             on Menu.menuidx=ShoppingBasket.menuidx and ShoppingBasket.basketidx=?
+                             on Menu.menuidx=ShoppingBasket.menuidx and ShoppingBasket.basketidx=? and ShoppingBasket.status='Y'
                   join Menudetail on Menudetail.menudetailidx=ShoppingBasket.menudetailidx
-        group by addmenu,menuname
+        group by addmenu,menuname;
     `;
     //장바구니 가격 합
     const selectshoppingbaskettotQuery = `
         select sum(((Menudetail.addtip)+(Menu.menuprice))*ShoppingBasket.menuquantity) as baskettotal
         from Menu inner join ShoppingBasket
-                             on Menu.menuidx=ShoppingBasket.menuidx and ShoppingBasket.basketidx=?
+                             on Menu.menuidx=ShoppingBasket.menuidx and ShoppingBasket.basketidx=? and ShoppingBasket.status='Y'
                   join Menudetail on Menudetail.menudetailidx=ShoppingBasket.menudetailidx
-        group by ShoppingBasket.basketidx;
+        group by ShoppingBasket.basketidx
     `;
     const [shoppingbasketRow] = await connection.query(selectshoppingbasketQuery,basketidx);
     const [shoppingbaskettotRow] = await connection.query(selectshoppingbaskettotQuery , basketidx);
@@ -167,7 +167,27 @@ async function updatebasketinfo(connection,menuidx,menudetailidx,menuquantity,us
     return updatebasketinfoRow[0];
 }
 
+//주문정보 등록
+async function insertorder(connection,[useridx,orderidx,menuidx,menudetailidx]) {
+    const insertorderInfoQuery = `
+        INSERT INTO OrderInfo(useridx,orderidx)
+        VALUES (?,?);
+    `;
+    const insertorderItemQuery = `
+        INSERT INTO OrderItem(useridx,orderidx)
+        VALUES (?,?);
+    `;
+    const insertorderRow = await connection.query(
+        insertorderInfoQuery,
+        [useridx,orderidx]
+    )
+    const insertorderItemRow = await connection.query(
+        insertorderItemQuery,
+        [orderidx,menuidx,menudetailidx]
+    );
 
+    return insertorderRow;
+}
 
 module.exports ={
     selectorderInfo,
@@ -179,5 +199,6 @@ module.exports ={
     selectbasketmin,
     selectmenuID,
     updatebasketmenu,
-    updatebasketinfo
+    updatebasketinfo,
+    insertorder
 };
