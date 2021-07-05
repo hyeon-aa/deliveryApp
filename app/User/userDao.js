@@ -100,7 +100,7 @@ async function selectuseraddress(connection, useridx) {
 async function selectlikestore(connection, useridx) {
     const selectlikestoreQuery = `
         select Store.storename,Store.deliverytip,Store.deliveryexpectTime,Store.orderamountmin,Store.takeout,orderc,
-        Store.storeimage,round(avg(Review.userstarRating),1) as'totalstarrate'
+               Store.storeimage,round(avg(Review.userstarRating),1) as'totalstarrate'
         from (select Store.storename,Store.storeidx,
                      case when count(OrderInfo.useridx)=1 then 1
                           when count(OrderInfo.useridx)=2 then 2
@@ -113,8 +113,8 @@ async function selectlikestore(connection, useridx) {
                  right join Review on Review.storeidx=OI.storeidx
                  right join Store on Store.storeidx=Review.storeidx
                  right join Userlikestore on Userlikestore.storeidx=Store.storeidx
-        where Userlikestore.useridx=?
-        group by Userlikestore.storeidx;
+        where Userlikestore.useridx=1 and Userlikestore.status=0
+        group by Userlikestore.storeidx
 
     `;
     const [userlikestoreRow] = await connection.query(selectlikestoreQuery, useridx);
@@ -140,7 +140,7 @@ async function selectorderlist(connection, useridx) {
                                            inner join Useraddress  on Useraddress.dongname=Delivery.dongname and Useraddress.useridx=OrderInfo.useridx and Useraddress.base=0
                                            inner join Menu on Menu.storeidx=Delivery.storeidx
                                            inner join ShoppingBasket on Menu.menuidx=ShoppingBasket.menuidx
-                                           join Menudetail on ShoppingBasket.menudetailidx=Menudetail.menudetailidx and OrderInfo.basketidx=ShoppingBasket.basketidx
+                                           join Menudetail on ShoppingBasket.menudetailidx=Menudetail.menudetailidx and OrderInfo.basketidx=ShoppingBasket.basketidx  and ShoppingBasket.status='Y'
                                            left join PointUse on OrderInfo.orderidx= PointUse.orderidx
                                   where OrderInfo.useridx=?
                                   group by ShoppingBasket.basketidx)as A
@@ -148,7 +148,7 @@ async function selectorderlist(connection, useridx) {
             select OrderInfo.useridx,OrderInfo.storeidx,ifnull(Coupon.coupondiscount,0) as 'coupon'
             from Coupon right join OrderInfo on OrderInfo.storeidx=Coupon.storeidx
                         right join Havecoupon on Havecoupon.useridx=OrderInfo.useridx
-                and Coupon.couponidx=Havecoupon.couponidx) as B
+                and Coupon.couponidx=Havecoupon.couponidx and validity>current_timestamp()) as B
                                             on A.useridx=B.useridx and A.storeidx=B.storeidx;
 
     `;
@@ -165,7 +165,7 @@ async function selectusercoupon(connection, useridx) {
              ,Store.takeout
         from Coupon inner join Havecoupon on Coupon.couponidx=Havecoupon.couponidx
                     join Store on Store.storeidx=Coupon.storeidx
-        where useridx=?
+        where useridx=? and validity>current_timestamp()
     `;
     const [usercouponRow] = await connection.query(selectusercouponQuery, useridx);
     return usercouponRow;
@@ -227,7 +227,7 @@ async function selectmyreview(connection, useridx) {
         from OrderItem
                  inner join Menu on Menu.menuidx = OrderItem.menuidx
                  inner join OrderInfo on OrderItem.orderidx = OrderInfo.orderidx
-                 inner join Review on Menu.storeidx = Review.storeidx
+                 inner join Review on Menu.storeidx = Review.storeidx and Review.status=0
                  inner join Store on Store.storeidx = Review.storeidx
                  inner join User on User.useridx = Review.useridx
         where User.useridx=?
@@ -236,7 +236,7 @@ async function selectmyreview(connection, useridx) {
     `;
     const selectmyreviewimgQuery = `
         select ReviewMenuImage.reviewImgpath,Review.reviewidx,User.username
-        from ReviewMenuImage inner join Review on ReviewMenuImage.reviewidx=Review.reviewidx
+        from ReviewMenuImage inner join Review on ReviewMenuImage.reviewidx=Review.reviewidx and Review.status=0
                              inner join User on User.useridx=Review.useridx
         where User.useridx=?;
     `;
