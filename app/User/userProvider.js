@@ -84,30 +84,6 @@ exports.retrieveuserpoint= async function (useridx) {
   return userpointResult;
 };
 
-//유저 포인트 내역 조회
-exports.retrieveuserpointinfo = async function (useridx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const userpointinfoResult = await userDao.selectuserpointinfo(connection, useridx);
-
-  connection.release();
-
-  return userpointinfoResult;
-};
-
-//유저 포인트 전체 조회
-exports.retrieveuserpointdetail = async function (useridx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const userpointResult = await userDao.selectuserpoint(connection, useridx);
-  const userpointinfoResult = await userDao.selectuserpointinfo(connection, useridx);
-
-  connection.release();
-
-  var userpointdetailArray=new Array();
-  userpointdetailArray.push(userpointResult);
-  userpointdetailArray.push(userpointinfoResult);
-  return userpointdetailArray
-};
-
 //유저 검색내역 조회
 exports.retrieveusersearch= async function (useridx) {
   const connection = await pool.getConnection(async (conn) => conn);

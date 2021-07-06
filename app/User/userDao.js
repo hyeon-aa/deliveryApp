@@ -180,19 +180,17 @@ async function selectuserpoint(connection, useridx) {
         where PointUse.useridx=?
         group by PointUse.useridx;
         `;
-    const [userpointRow] = await connection.query(selectuserpointQuery, useridx);
-    return userpointRow;
-}
-
-//유저 포인트 내역 조회
-async function selectuserpointinfo(connection, useridx) {
     const selectuserpointinfoQuery = `
         select pointuse,pointsave
         from PointUse
         where PointUse.useridx=?;
         `;
     const [userpointinfoRow] = await connection.query(selectuserpointinfoQuery, useridx);
-    return userpointinfoRow;
+    const [userpointRow] = await connection.query(selectuserpointQuery, useridx);
+    pointarray=[];
+    pointarray.push(userpointRow);
+    pointarray.push(userpointinfoRow);
+    return pointarray;
 }
 
 //사용자 검색내역조회
@@ -487,7 +485,7 @@ module.exports = {
     selectorderID,
     insertpointsave,
     selectuserorderID,
-    selectuserpointinfo,
+    //selectuserpointinfo,
     updateuserbaseaddress,
     updateuserstatus
 };

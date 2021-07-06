@@ -35,12 +35,6 @@ module.exports = function(app){
     //*유저 포인트 조회
     app.get('/app/users/point', jwtMiddleware, user.getuserpoint);
 
-    //*유저 포인트 내역 조회
-    app.get('/app/users/pointinfo', jwtMiddleware, user.getuserpointinfo);
-
-    //*유저 포인트 전체 조회
-    app.get('/app/users/pointdetail', jwtMiddleware, user.getuserpointdetail);
-
     //* 찜한 가게 조회 API
     app.get('/app/users/like-store',jwtMiddleware, user.getlikestoreById);
 

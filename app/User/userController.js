@@ -402,31 +402,11 @@ exports.getusercoupon = async function (req, res) {
 //유저포인트 조회
 exports.getuserpoint= async function (req, res) {
 
-    //const useridx = req.query.useridx ;
     const useridx = req.verifiedToken.useridx ;
 
     const userpointByUserId = await userProvider.retrieveuserpoint(useridx);
     return res.send(response(baseResponse.POINT_SUCCESS,userpointByUserId));
 };
-
-//유저포인트 내역 조회
-exports.getuserpointinfo= async function (req, res) {
-
-    const useridx = req.verifiedToken.useridx ;
-
-    const userpointinfoByUserId = await userProvider.retrieveuserpointinfo(useridx);
-    return res.send(response(baseResponse.POINT_SUCCESS,userpointinfoByUserId));
-};
-
-//유저포인트 전체 조회
-exports.getuserpointdetail= async function (req, res) {
-
-    const useridx = req.verifiedToken.useridx ;
-
-    const userpointdetailByUserId = await userProvider.retrieveuserpointdetail(useridx);
-    return res.send(response(baseResponse.POINT_SUCCESS,userpointdetailByUserId));
-};
-
 
 //유저주소 조회
 exports.getuseraddress= async function (req, res) {
@@ -587,11 +567,10 @@ passport.use('kakao-login', new KakaoStrategy({
 }));
 
 
-
 //네이버로그인
 passport.use('naver-login', new NaverStrategy({
     clientID: 'XAXkYSgSGCHYqUt33zN4',
-    clientSecret: 'vlz1_nLGnM',
+    clientSecret: '${secret_config.clientSecret}',
     state:"RANDOM_STATE",
     callbackURL: 'http://localhost:3000/auth/naver/callback',
 }, async (accessToken, refreshToken, profile, done) => {
