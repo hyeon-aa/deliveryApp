@@ -3,14 +3,17 @@ const userProvider = require("../../app/User/userProvider");
 const userService = require("../../app/User/userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
-const passport = require('passport')
+const passport = require('passport');
 const KakaoStrategy = require('passport-kakao').Strategy;
+const NaverStrategy = require('passport-naver').Strategy;
 const secret_config = require("../../../config//secret");
+const queryString = require('querystring');
 
 const axios = require("axios");
 const regexEmail = require("regex-email");
 const {emit} = require("nodemon");
 const crypto = require("crypto");
+var session = require('express-session');
 
 //회원가입
 exports.postUsers = async function (req, res) {
@@ -152,7 +155,7 @@ exports.postaddress = async function (req, res) {
 };
 */
 
-//유저 주소 등록2
+//유저 주소 등록2(현재위치로)
 exports.postaddress = async function (req, res) {
 
     const useridx = req.verifiedToken.useridx;
@@ -160,7 +163,6 @@ exports.postaddress = async function (req, res) {
 
     const header = `KakaoAK ${secret_config.KAKAO_SECRET}`;
     const api_url = `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?input_coord=WGS84&output_coord=WGS84&y=${latitude}&x=${longitude}`;
-
 
     const result = await axios({
         url: api_url,
@@ -217,6 +219,75 @@ exports.postaddress = async function (req, res) {
     return res.send(addressResponse);
 };
 
+
+//유저 주소 등록3(주소 검색으로)
+/*
+exports.postaddress = async function (req, res) {
+
+    const useridx = req.verifiedToken.useridx;
+    const {useraddress, base} = req.body;
+
+    const encodeaddress = queryString.escape(useraddress);
+    const header = `KakaoAK ${secret_config.KAKAO_SECRET}`;
+    const api_url = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeaddress}`;
+
+    const result = await axios({
+        url: api_url,
+        method: "get",
+        headers: {
+            Authorization: header,
+        }
+    })
+
+        .then(function (response) {
+            console.log(response.data.documents);
+            const longitude = response.data.documents[0].x;
+            const latitude = response.data.documents[0].y;
+            const dongname = response.data.documents[0].address.region_3depth_name;
+            // console.log(response.data.documents[0].region_3depth_name);
+            let myadd=[];
+            myadd.push(latitude);
+            myadd.push(longitude);
+            myadd.push(dongname);
+            console.log(myadd);
+            return myadd;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+
+    console.log('결과',result);
+    const latitude=result[0];
+    const longitude=result[1];
+    const dongname=result[2];
+
+    // 위도 체크
+    if (!latitude)
+        return res.send(response(baseResponse.USER_LATITUDE_EMPTY));
+
+    // 위도 길이 체크
+    if (latitude > 43 || latitude < 33)
+        return res.send(response(baseResponse.LATITUDE_LENGTH));
+
+    // 경도 체크
+    if (!longitude)
+        return res.send(response(baseResponse.USER_LONGITUDE_EMPTY));
+
+    // 경도 길이 체크
+    if (longitude > 132 || longitude < 124)
+        return res.send(response(baseResponse.LONGITUDE_LENGTH));
+
+    // 기본배송지여부 체크
+    if (!base)
+        return res.send(response(baseResponse.USER_BASE_EMPTY));
+
+    var addressResponse = await userService.createaddress(
+        useridx, useraddress, dongname, latitude, longitude, base
+    );
+
+    return res.send(addressResponse);
+};
+*/
 
 //유저 검색내용 등록
 exports.postsearchcontent = async function (req, res) {
@@ -469,6 +540,43 @@ exports.patchuseraddress = async function (req, res) {
     }
 };
 
+//유저 기본주소 변경
+exports.patchuserbaseaddress = async function (req, res) {
+
+
+    const userIdFromJWT = req.verifiedToken.useridx
+
+    const  useridx= req.params.useridx;
+    const useraddress = req.body.useraddress;
+
+    if (userIdFromJWT != useridx) {
+        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
+    } else {
+        if (!useraddress) return res.send(errResponse(baseResponse.USER_ADDRESS_EMPTY));
+
+        const edituserbaseaddress = await userService.edituserbaseaddress(useridx, useraddress)
+        return res.send(edituserbaseaddress);
+    }
+};
+
+//유저 탈퇴
+exports.patchuserstatus = async function (req, res) {
+
+
+    const userIdFromJWT = req.verifiedToken.useridx
+
+    const  useridx= req.params.useridx;
+
+    if (userIdFromJWT != useridx) {
+        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
+    }
+
+        const edituserstatus = await userService.edituserstatus(useridx)
+        return res.send(edituserstatus);
+};
+
+
+
 //카카오로그인
 passport.use('kakao-login', new KakaoStrategy({
         clientID: '${secret_config.KAKAO_SECRET}',
@@ -476,6 +584,27 @@ passport.use('kakao-login', new KakaoStrategy({
     }, async (accessToken, refreshToken, profile, done) => {
         console.log(accessToken);
         console.log(refreshToken);
+}));
+
+
+// app.use(passport.session());
+
+// app.use(session({
+//     secret: 'keyboard cat',
+//     resave: false,
+//     saveUninitialized: true,
+//    // cookie: { secure: true }
+// }))
+
+//네이버로그인
+passport.use('naver-login', new NaverStrategy({
+    clientID: 'XAXkYSgSGCHYqUt33zN4',
+    clientSecret: 'vlz1_nLGnM',
+    state:"RANDOM_STATE",
+    callbackURL: 'http://localhost:3000/auth/naver/callback',
+}, async (accessToken, refreshToken, profile, done) => {
+    console.log(accessToken);
+    console.log(refreshToken);
 }));
 
 

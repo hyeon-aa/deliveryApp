@@ -3,6 +3,7 @@ module.exports = function(app){
     const jwtMiddleware = require('../../../config/jwtMiddleware');
     const passport = require('passport')
     const KakaoStrategy = require('passport-kakao').Strategy;
+    const NaverStrategy = require('passport-naver').Strategy;
 
     // 1. 유저 생성 (회원가입) API
     app.post('/app/users/create', user.postUsers);
@@ -52,9 +53,6 @@ module.exports = function(app){
     //*내가쓴 리뷰 정보조회
     app.get('/app/users/myreviewInfo',jwtMiddleware, user.getmyreviewInfo);
 
-    // 유저 조회 API (+ 검색)
-    //app.get('/app/users',user.getUsers);
-
     //특정 유저 조회 API
     app.get('/app/users/myInfo',jwtMiddleware, user.getUserById);
 
@@ -70,10 +68,19 @@ module.exports = function(app){
     //유저 주소 삭제
     app.patch('/app/users/address/:useridx/status',jwtMiddleware, user.patchuseraddress);
 
+    //유저 기본주소 변경
+    app.patch('/app/users/address/:useridx/base',jwtMiddleware, user.patchuserbaseaddress);
+
+    //유저 탈퇴
+    app.patch('/app/users/:useridx/status',jwtMiddleware, user.patchuserstatus);
+
     //카카오로그인
     app.get('/kakao', passport.authenticate('kakao-login'));
     app.get('/auth/kakao/callback', passport.authenticate('kakao-login', { failureRedirect: '/', }), (req, res) => { res.redirect('/'); });
 
+    //네이버로그인
+    app.get('/naver', passport.authenticate('naver-login'));
+    app.get('/auth/naver/callback', passport.authenticate('naver-login', { failureRedirect: '/', }), (req, res) => { res.redirect('/'); });
 
 };
 

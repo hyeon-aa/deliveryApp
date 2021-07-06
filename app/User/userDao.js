@@ -439,6 +439,25 @@ async function updateuseraddress(connection, useridx,useraddress,status) {
     return updateuseraddressRow[0];
 }
 
+//유저 기본주소 변경
+async function updateuserbaseaddress(connection, useridx,useraddress,base) {
+    const updateuserbaseaddressQuery = `
+  UPDATE Useraddress
+  SET base=0
+  WHERE useridx=? and useraddress = ? ;`;
+    const updateuserbaseaddressRow = await connection.query(updateuserbaseaddressQuery, [useridx,useraddress,base]);
+    return updateuserbaseaddressRow[0];
+}
+
+//유저 탈퇴
+async function updateuserstatus(connection, useridx,status) {
+    const updateuserstatusQuery = `
+  UPDATE User
+  SET status = 2
+  WHERE useridx=? `;
+    const updateuserstatusRow = await connection.query(updateuserstatusQuery, [useridx,status]);
+    return updateuserstatusRow[0];
+}
 
 module.exports = {
     selectUser,
@@ -468,5 +487,7 @@ module.exports = {
     selectorderID,
     insertpointsave,
     selectuserorderID,
-    selectuserpointinfo
+    selectuserpointinfo,
+    updateuserbaseaddress,
+    updateuserstatus
 };

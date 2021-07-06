@@ -326,3 +326,40 @@ exports.edituseraddress = async function (useridx,useraddress) {
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
+//유저 기본주소 변경
+exports.edituserbaseaddress = async function (useridx,useraddress) {
+    try {
+
+        const baseaddressRows = await userProvider.baseaddressCheck(useridx);
+        if (baseaddressRows.length >0)
+            return errResponse(baseResponse. BASEADDRESS_ONLY_ONE);
+
+        console.log(useridx)
+        const connection = await pool.getConnection(async (conn) => conn);
+        const edituserbaseaddressResult = await userDao.updateuserbaseaddress(connection,useridx,useraddress)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editUser Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+//유저 탈퇴
+exports.edituserstatus = async function (useridx) {
+    try {
+        console.log(useridx)
+        const connection = await pool.getConnection(async (conn) => conn);
+        const edituserstatusResult = await userDao.updateuserstatus(connection,useridx)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editUser Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
