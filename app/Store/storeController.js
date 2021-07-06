@@ -29,22 +29,22 @@ exports.getstorecategoryList = async function (req, res) {
 
 
 //주소에 따른 카테고리별 음식점 조회
-/*
 exports.getcategoryStoreidx = async function (req, res) {
 
-    const categoryidx = req.query.categoryidx;
+    const {categoryidx,sort,page,size} = req.query;
     const useridx = req.verifiedToken.useridx ;
 
 
    if (!categoryidx) return res.send(errResponse(baseResponse. CATEGORY_CATEGORYIDX_EMPTY));
     if (!useridx) return res.send(errResponse(baseResponse. USER_USERIDX_EMPTY));
 
-    const storeBycategoryidx = await storeProvider.retrieveStorecategory([categoryidx,useridx]);
+    const storeBycategoryidx = await storeProvider.retrieveStorecategory([categoryidx,useridx,sort,page,size]);
     return res.send(response(baseResponse.STOREBYCATEGORY_SUCCESS, storeBycategoryidx));
 };
-*/
+
 
 //주소에 따른 카테고리별 음식점 조회2(현재위치에따라서)
+/*
 exports.getcategoryStoreidx = async function (req, res) {
 
   try {
@@ -79,6 +79,7 @@ exports.getcategoryStoreidx = async function (req, res) {
     }
 
 };
+*/
 
 //음식점 메뉴 조회
 exports.getmenuInfo = async function (req, res) {

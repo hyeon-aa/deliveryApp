@@ -34,19 +34,20 @@ exports.retrievemenuInfo = async function (storeidx) {
     return storemenuResult;
 };
 
-/*
+
 //주소에 따른 카테고리별 음식점 조회
-exports.retrieveStorecategory = async function ([categoryidx,useridx]) {
+exports.retrieveStorecategory = async function ([categoryidx,useridx,sort,page,size]) {
     const connection = await pool.getConnection(async (conn) => conn);
-    const storecategoryResult = await storeDao.selectcategorystoreidx(connection, [categoryidx,useridx]);
+    const storecategoryResult = await storeDao.selectcategorystoreidx(connection, [categoryidx,useridx,sort,page,size]);
 
     connection.release();
 
    return storecategoryResult;
 };
-*/
 
-//주소에 따른 카테고리별 음식점 조회2
+
+//주소에 따른 카테고리별 음식점 조회2(현재위치에따라서)
+/*
 exports.retrieveStorecategory = async function ([categoryidx,useridx,lat,long,sort,page,size]) {
     const connection = await pool.getConnection(async (conn) => conn);
     const storecategoryResult = await storeDao.selectcategorystoreidx(connection, [categoryidx,useridx,lat,long,sort,page,size]);
@@ -55,7 +56,7 @@ exports.retrieveStorecategory = async function ([categoryidx,useridx,lat,long,so
 
     return storecategoryResult;
 };
-
+*/
 
 
 //음식점 상세정보 조회

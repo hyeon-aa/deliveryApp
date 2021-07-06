@@ -98,9 +98,8 @@ async function selectmenubyStoreidx(connection, storeidx) {
 }
 
 //주소에 따른 카테고리별 음식점 조회
-/*
-async function selectcategorystoreidx(connection, [categoryidx,useridx]) {
-    const selectcategorystoreidxQuery = `
+async function selectcategorystoreidx(connection, [categoryidx,useridx,sort,page,size]) {
+    var selectcategorystoreidxQuery = `
         select * from (
             SELECT storename,deliveryexpectTime AS 'deliverytime',orderamountmin,deliveryTip,takeout,round(avg(userstarRating),1) as 'starrate',storeimage
     ,case  when count(OrderInfo.useridx)=0 then 0
@@ -117,7 +116,7 @@ async function selectcategorystoreidx(connection, [categoryidx,useridx]) {
                           from Review right outer join Store on (Review.storeidx=Store.storeidx)
                                       left outer join OrderInfo on(Review.orderidx=OrderInfo.orderidx)
                           where Store.categoryidx=? and Store.status='Y'
-                            and current_time between Store.opentime and Store.closetime
+                   
                           group by Store.storeidx)as A
                           inner join (
             SELECT storename
@@ -129,15 +128,31 @@ async function selectcategorystoreidx(connection, [categoryidx,useridx]) {
                      where  Useraddress.useridx=? and Useraddress.base=0
                  ) DATA
             WHERE DATA.distance < 5)as B
-                                     on A.storename=B.storename ;`;
-    const [categorystoreRow] = await connection.query(selectcategorystoreidxQuery, [categoryidx,useridx]);
+                                     on A.storename=B.storename `;
+    if (!sort || sort == 0) {
+        selectcategorystoreidxQuery += `order by starrate DESC `;
+    }
+    else if (sort == 1) {
+        selectcategorystoreidxQuery += `order by orderc DESC`;
+    }
+    else if (sort == 2) {
+        selectcategorystoreidxQuery += `order by deliveryTip asc`;
+    }
+    else if (sort == 3) {
+        selectcategorystoreidxQuery += `order by distance asc`;
+    }
+    if(page){
+        selectcategorystoreidxQuery += ` LIMIT ${size * (page - 1)},${size}`
+    }
+    const [categorystoreRow] = await connection.query(selectcategorystoreidxQuery, [categoryidx,useridx,sort,page,size]);
     console.log(categoryidx);
     return categorystoreRow;
 }
-*/
 
 
-//주소에 따른 카테고리별 음식점 조회2
+
+//주소에 따른 카테고리별 음식점 조회2(현재위치에따라서)
+/*
 async function selectcategorystoreidx(connection, [categoryidx,useridx,lat,long,sort,page,size]) {
     var selectcategorystoreidxQuery = `
         select * from (
@@ -190,7 +205,7 @@ async function selectcategorystoreidx(connection, [categoryidx,useridx,lat,long,
     //console.log(categoryidx);
     return categorystoreRow;
 }
-
+*/
 
 //가게 상세정보 조회
 async function selectstoredetail(connection, storeidx) {
