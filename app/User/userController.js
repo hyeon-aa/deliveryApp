@@ -587,14 +587,6 @@ passport.use('kakao-login', new KakaoStrategy({
 }));
 
 
-// app.use(passport.session());
-
-// app.use(session({
-//     secret: 'keyboard cat',
-//     resave: false,
-//     saveUninitialized: true,
-//    // cookie: { secure: true }
-// }))
 
 //네이버로그인
 passport.use('naver-login', new NaverStrategy({
