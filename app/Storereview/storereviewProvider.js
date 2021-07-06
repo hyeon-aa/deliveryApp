@@ -28,10 +28,10 @@ exports.userorderIDCheck = async function (useridx) {
 };
 
 //리뷰보드 조회
-exports.retrievereviewBoard = async function (storeidx) {
+exports.retrievereviewBoard = async function ([storeidx,sort,page,size]) {
     const connection = await pool.getConnection(async (conn) => conn);
 
-    const StorereviewBoardResult = await storereviewDao.selectStorereviewBoard(connection, storeidx);
+    const StorereviewBoardResult = await storereviewDao.selectStorereviewBoard(connection, [storeidx,sort,page,size]);
 
     connection.release();
 

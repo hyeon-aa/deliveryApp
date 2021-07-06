@@ -87,13 +87,12 @@ exports.patchstorereviewcontent = async function (req, res) {
 exports.getreviewBoard = async function (req, res) {
 
 
-    const storeidx = req.query.storeidx;
-     // const page = req.query.page;
+    var {storeidx,sort,page,size} = req.query;
      // const size = req.query.size;
 
     if (!storeidx) return res.send(errResponse(baseResponse. STORE_STOREIDX_EMPTY));
 
-    const reviewBoardByStoreidx = await storereviewProvider.retrievereviewBoard(storeidx);
+    const reviewBoardByStoreidx = await storereviewProvider.retrievereviewBoard([storeidx,sort,page,size]);
     return res.send(response(baseResponse.REVIEWBOARD_SUCCESS,reviewBoardByStoreidx));
 };
 

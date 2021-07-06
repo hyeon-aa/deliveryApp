@@ -62,7 +62,7 @@ async function insertstorereview(connection, [useridx,storeidx,orderidx,userstar
 }
 
 //리뷰 보드 조회
-async function selectStorereviewBoard(connection, storeidx) {
+async function selectStorereviewBoard(connection, [storeidx,sort,page,size]) {
     //리뷰 리스트
     var selectStorereviewListQuery = `
         select distinct(Review.reviewidx),
@@ -92,18 +92,33 @@ async function selectStorereviewBoard(connection, storeidx) {
         where OrderInfo.storeidx = ?
           and Review.orderidx = OrderItem.orderidx
     `;
-    const [StorereviewListRow] = await connection.query(selectStorereviewListQuery, storeidx);
+    console.log('s',sort);
+
+    if (!sort || sort == 0) {
+            selectStorereviewListQuery += ` ORDER BY  Review.userstarRating  DESC `;
+    } else if (sort == 1) {
+            selectStorereviewListQuery += ` ORDER BY  Review.userstarRating  ASC`;
+    }
+    else if (sort == 2) {
+        selectStorereviewListQuery += ` ORDER BY  updatedAt  DESC`;
+    }
+    if(page){
+        selectStorereviewListQuery += ` LIMIT ${size * (page - 1)},${size}`
+    }
+    const [StorereviewListRow] = await connection.query(selectStorereviewListQuery,[storeidx,sort]);
+
+
     //console.log(StorereviewListRow);
 
-    var array3=[];
-    for (i in StorereviewListRow){
-        array3.push(StorereviewListRow[i].reviewidx);
-    };
-    console.log('주문',StorereviewListRow);
-    for (j in  StorereviewListRow) {
-        StorereviewListRow[j].reviewidx
-        //console.log("review번호",StorereviewListRow[j].reviewidx);
-    }
+    // var array3=[];
+    // for (i in StorereviewListRow){
+    //     array3.push(StorereviewListRow[i].reviewidx);
+    // };
+    // console.log('주문',StorereviewListRow);
+    // for (j in  StorereviewListRow) {
+    //     StorereviewListRow[j].reviewidx
+    //     console.log("review번호",StorereviewListRow[j].reviewidx);
+    // }
 
     //리뷰 메뉴추천
    for (j in StorereviewListRow){
@@ -140,6 +155,7 @@ async function selectStorereviewBoard(connection, storeidx) {
         StorereviewListRow[j].reviewimg = reviewimgRow;
         //console.log('이미지',reviewimgRow);
     }
+
 
         return StorereviewListRow;
 
