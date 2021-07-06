@@ -29,7 +29,7 @@ module.exports = {
     USER_DONGNAME_EMPTY : { "isSuccess": false, "code": 2050, "message": "동 이름을 입력해주세요." },
     USER_LONGITUDE_EMPTY : { "isSuccess": false, "code": 2051, "message": "경도를 입력해주세요." },
     USER_LATITUDE_EMPTY : { "isSuccess": false, "code": 2052, "message": "위도를 입력해주세요." },
-    USER_BASE_EMPTY : { "isSuccess": false, "code": 2053, "message": "기본배송지 여부를 입력해주세요." },
+    USER_BASE_EMPTY : { "isSuccess": false, "code": 2053, "message": "기본주소 여부를 입력해주세요." },
     USER_ADDRESS_EMPTY : { "isSuccess": false, "code": 2054, "message": "주소를 입력해주세요." },
 
 
@@ -45,7 +45,7 @@ module.exports = {
     STARRATING_LENGTH : { "isSuccess": false, "code": 2023, "message":"별점은  1~5점으로 입력해주세요." },
     LATITUDE_LENGTH : { "isSuccess": false, "code": 2055, "message":"위도는 33~43으로 입력해주세요." },
     LONGITUDE_LENGTH : { "isSuccess": false, "code": 2056, "message":"경도는 124~132로 입력해주세요." },
-    BASEADDRESS_ONLY_ONE : { "isSuccess": false, "code": 2057, "message":"기본 배송지는 하나만 가능합니다." },
+    BASEADDRESS_ONLY_ONE : { "isSuccess": false, "code": 2057, "message":"기본 주소는 하나만 가능합니다." },
 
     // Common
     TOKEN_EMPTY : { "isSuccess": false, "code": 2000, "message":"JWT 토큰을 입력해주세요." },
