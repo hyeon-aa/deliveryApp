@@ -43,23 +43,47 @@ exports.createUser = async function (useremail ,username,userphoneNum,birthday,u
     }
 };
 
-//가게 찜 등록
+//가게 찜 등록,취소
 exports.createlikestore = async function (useridx,storeidx) {
     try {
 
         const storeRows = await userProvider.storeIDCheck(storeidx);
         if (storeRows.length === 0)
-            return errResponse(baseResponse. STORE_STOREID_NOT_EXIST);
+            return errResponse(baseResponse.STORE_STOREID_NOT_EXIST);
 
-        const insertlikestoreParams = [useridx,storeidx];
+        const likestoreRows = await userProvider.retrieveUserlikestorestatus(useridx, storeidx);
+        console.log(likestoreRows);
 
+        const insertlikestoreParams = [useridx, storeidx];
         const connection = await pool.getConnection(async (conn) => conn);
-
-        const likestoreResult = await userDao.insertlikestore(connection, insertlikestoreParams);
-        connection.release();
-        return response(baseResponse.SUCCESS);
-
-    } catch (err) {
+        if (likestoreRows.length < 1)
+     {
+            const likestoreResult = await userDao.insertlikestore(connection, insertlikestoreParams);
+            connection.release();
+            return response(baseResponse.SUCCESS);
+        } else {
+            if (likestoreRows[0].status === 0) {
+                var status = 1;
+                console.log(status);
+                const likestoreResult = await userDao.updateuserlikestore(
+                    connection,
+                    status,useridx,storeidx
+                );
+                connection.release();
+                return response(baseResponse.LIKESTORE_ADD_SUCCESS);
+            }
+            else{
+                var status=0;
+                console.log(status);
+                const likestoreResult = await userDao.updateuserlikestore(
+                    connection,
+                    status,useridx,storeidx
+                );
+                connection.release();
+                return response(baseResponse.LIKESTORE_DELETE_SUCCESS);
+            };
+        }
+}catch (err) {
         logger.error(`App - createUser Service error\n: ${err.message}`);
         return errResponse(baseResponse.DB_ERROR);
     }
@@ -285,22 +309,6 @@ exports.editUser = async function (useridx, username) {
         console.log(useridx)
         const connection = await pool.getConnection(async (conn) => conn);
         const editUserResult = await userDao.updateUserInfo(connection, useridx, username)
-        connection.release();
-
-        return response(baseResponse.SUCCESS);
-
-    } catch (err) {
-        logger.error(`App - editUser Service error\n: ${err.message}`);
-        return errResponse(baseResponse.DB_ERROR);
-    }
-};
-
-//가게 찜 취소
-exports.editlikestore = async function (useridx, storeidx) {
-    try {
-        console.log(useridx)
-        const connection = await pool.getConnection(async (conn) => conn);
-        const editlikestoreResult = await userDao.updateuserlikestore(connection, useridx,  storeidx)
         connection.release();
 
         return response(baseResponse.SUCCESS);

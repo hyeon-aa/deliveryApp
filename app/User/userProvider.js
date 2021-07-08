@@ -42,6 +42,17 @@ exports.retrieveUserlikestore = async function (useridx) {
   return userlikestoreResult;
 };
 
+//찜한가게 상태
+exports.retrieveUserlikestorestatus = async function (useridx,storeidx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const userlikestorestatusResult = await userDao.selectuserlikestorestatus(connection,useridx,storeidx);
+  console.log(userlikestorestatusResult);
+
+  connection.release();
+
+  return userlikestorestatusResult;
+};
+
 //주문내역
 exports.retrieveorderlist = async function (useridx) {
   const connection = await pool.getConnection(async (conn) => conn);

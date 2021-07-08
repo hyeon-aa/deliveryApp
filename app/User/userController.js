@@ -58,9 +58,8 @@ exports.postUsers = async function (req, res) {
     return res.send(signUpResponse);
 };
 
-//가게 찜 등록
+//가게 찜 등록,취소
 exports.postlikestores = async function (req, res) {
-
 
     const useridx = req.verifiedToken.useridx ;
     const {storeidx} = req.body;
@@ -69,8 +68,9 @@ exports.postlikestores = async function (req, res) {
     if (!storeidx)
         return res.send(response(baseResponse. STORE_STOREIDX_EMPTY));
 
+
     const likestoreResponse = await userService.createlikestore(
-      useridx,storeidx
+        useridx,storeidx
     );
 
     return res.send(likestoreResponse);
@@ -482,25 +482,6 @@ exports.patchUsers = async function (req, res) {
     }
 };
 
-//찜한 가게 삭제
-exports.patchlikestores = async function (req, res) {
-    
-
-    const userIdFromJWT = req.verifiedToken.useridx
-
-    const  useridx= req.params.useridx;
-    const storeidx = req.body.storeidx;
-
-    if (userIdFromJWT != useridx) {
-        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
-    } else {
-        if (!storeidx) return res.send(errResponse(baseResponse.STORE_STOREIDX_EMPTY));
-
-        const editlikestore = await userService.editlikestore(useridx, storeidx)
-        return res.send(editlikestore);
-    }
-};
-
 //유저 주소 삭제
 exports.patchuseraddress = async function (req, res) {
     
@@ -587,8 +568,9 @@ passport.use('naver-login', new NaverStrategy({
 /** JWT 토큰 검증 API
  * [GET] /app/auto-login
  */
-exports.check = async function (req, res) {
-    const userIdResult = req.verifiedToken.userId;
+exports.autoLogin = async function (req, res) {
+    const useridx = req.verifiedToken.useridx;
     console.log(userIdResult);
-    return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
+    const AutosignInResponse = await userService.postAutoSignIn(userIdFromJWT);
+    return res.send(AutosignInResponse);
 };

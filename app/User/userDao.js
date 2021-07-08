@@ -276,6 +276,27 @@ async function insertlikestore(connection, insertlikestoreParams) {
     return insertlikestoreRow;
 }
 
+//유저 찜 등록,취소
+async function updateuserlikestore(connection,status,useridx,storeidx) {
+    const updateuserlikestoreQuery = `
+  UPDATE Userlikestore
+  SET status = ?
+  WHERE useridx = ? and storeidx =? `;
+    const updateuserlikestoreRow = await connection.query(updateuserlikestoreQuery, [status,useridx,storeidx]);
+    return updateuserlikestoreRow[0];
+}
+
+//유저 찜한가게 상태 조회
+async function selectuserlikestorestatus(connection, useridx,storeidx) {
+    const selectuserlikestorestatusQuery = `
+ select useridx,storeidx,status
+ from Userlikestore
+     where useridx=? and storeidx=?
+     `;
+    const selectuserlikestorestatusRow = await connection.query(selectuserlikestorestatusQuery, [useridx,storeidx]);
+    return selectuserlikestorestatusRow[0];
+}
+
 // 유저 포인트 사용
 async function insertpointuse(connection, insertpointuseParams) {
     const insertpointuseQuery = `
@@ -417,16 +438,6 @@ async function updateUserInfo(connection, useridx,username ) {
     return updateUserRow[0];
 }
 
-//가게 찜 취소
-async function updateuserlikestore(connection, useridx,storeidx,status) {
-    const updateuserlikestoreQuery = `
-  UPDATE Userlikestore
-  SET status = 1
-  WHERE useridx = ? and storeidx =? ;`;
-    const updateuserlikestoreRow = await connection.query(updateuserlikestoreQuery, [useridx,storeidx,status]);
-    return updateuserlikestoreRow[0];
-}
-
 //유저 주소 삭제
 async function updateuseraddress(connection, useridx,useraddress,status) {
     const updateuseraddressQuery = `
@@ -485,7 +496,7 @@ module.exports = {
     selectorderID,
     insertpointsave,
     selectuserorderID,
-    //selectuserpointinfo,
     updateuserbaseaddress,
-    updateuserstatus
+    updateuserstatus,
+    selectuserlikestorestatus
 };

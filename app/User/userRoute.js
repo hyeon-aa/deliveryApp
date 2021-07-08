@@ -8,7 +8,7 @@ module.exports = function(app){
     // 1. 유저 생성 (회원가입) API
     app.post('/app/users/create', user.postUsers);
 
-    //가게 찜 등록
+    //가게 찜 등록,취소
     app.post('/app/users/mylikestore',jwtMiddleware, user.postlikestores);
 
     //유저 검색내용 등록
@@ -55,9 +55,6 @@ module.exports = function(app){
 
     // 회원 정보 수정 API (JWT 검증 및 Validation)
     app.patch('/app/users/:useridx', jwtMiddleware, user.patchUsers)
-
-    //가게 찜 취소
-    app.patch('/app/users/mylikestores/:useridx/status',jwtMiddleware, user.patchlikestores);
 
     //유저 주소 삭제
     app.patch('/app/users/address/:useridx/status',jwtMiddleware, user.patchuseraddress);
